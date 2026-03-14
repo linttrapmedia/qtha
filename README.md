@@ -1,10 +1,108 @@
-# Spectra
+# <♼> Spectra
 
-**One-liner:**
-Structured specs for LLM-powered automation and code generation.
-
-**Full description:**
 Spectra is a library and convention for defining, maintaining, and using structured data in a way that’s optimized for large language models (LLMs). At its core, Spectra uses standardized `.spec.json` files that contain both data and metadata—tracking design decisions, changes, and generation instructions.
+
+## Installation
+
+```bash
+git clone https://github.com/linttrapmedia/spectra.git
+cd spectra
+bun install
+bun link
+```
+
+After linking, the `spectra` CLI is available globally:
+
+```bash
+spectra --help
+```
+
+## Quick Start
+
+```bash
+# Create a new spec file
+spectra init my-app.spec.json
+
+# Validate it
+spectra validate my-app.spec.json
+
+# Compile directives into VS Code Copilot .prompt.md files
+spectra compile my-app.spec.json --out .github/prompts
+
+# Scan a directory for all spec files
+spectra scan .
+
+# Get detailed info about a spec
+spectra info my-app.spec.json
+
+# Diagnose issues
+spectra doctor my-app.spec.json
+
+# Set up the Copilot agent file
+spectra setup
+```
+
+## CLI Reference
+
+```
+spectra init [file]              Create a new .spec.json template (default: spectra.spec.json)
+spectra compile <file|dir>       Compile .prompt.md files from spec directives
+  --ide vscode                   IDE target (default: vscode)
+  --out <dir>                    Output directory (default: .github/prompts/)
+spectra scan [dir]               Recursively find and report all *.spec.json files
+spectra info [file|dir]          Report detailed info about spec file(s)
+spectra doctor [file|dir]        Diagnose and report issues in spec file(s)
+spectra validate <file|dir>      Validate spec(s) against their schemas
+spectra setup                    Scaffold .github/agents/spectra.agent.md
+```
+
+## Library API
+
+Use Spectra programmatically in your own scripts:
+
+```typescript
+import {
+  readSpec,
+  writeSpec,
+  createSpec,
+  updateSpecData,
+  addChangeLogEntry,
+  addDesignEntry,
+  addDirective,
+  removeDirective,
+  getDirective,
+  listDirectives,
+  compilePromptFile,
+  compilePromptFiles,
+  validateSpec,
+  scanForSpecs,
+  getSpecInfo,
+  diagnoseSpec,
+} from "@linttrap/spectra";
+
+// Read a spec
+const spec = await readSpec("my-app.spec.json");
+
+// Validate it
+const result = validateSpec(spec);
+if (!result.valid) {
+  console.error(result.errors);
+}
+
+// Compile all directives to .prompt.md files
+const files = await compilePromptFiles("my-app.spec.json", ".github/prompts");
+
+// Scan for specs
+const specPaths = await scanForSpecs(".");
+
+// Get spec info
+const info = await getSpecInfo("my-app.spec.json");
+
+// Run diagnostics
+const diagnosis = await diagnoseSpec("my-app.spec.json");
+```
+
+---
 
 The Spectra command-line utility scans your codebase for `.spec.json` files, reads their metadata, and generates LLM prompts that include **directives**: scripted instructions for automated tasks. These directives fall into two categories:
 
