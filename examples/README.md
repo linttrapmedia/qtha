@@ -44,10 +44,14 @@ Reports any errors or warnings in the spec structure.
 ### 4. Compile prompt files
 
 ```bash
-bunx spectra compile my-app.spec.json --out ./prompts
+# First, set up spectra.json config (or ensure it exists)
+bunx spectra setup
+
+# Then compile (uses ide/out from spectra.json)
+bunx spectra compile my-app.spec.json
 ```
 
-This creates one `.prompt.md` file per directive in `./prompts/`:
+This creates one `.prompt.md` file per directive in the output directory configured in `spectra.json` (default: `.github/prompts/`):
 
 - `my-app.addEntity.prompt.md`
 - `my-app.generateTypes.prompt.md`

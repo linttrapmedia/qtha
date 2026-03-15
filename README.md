@@ -34,13 +34,13 @@ bun link
 
 ```bash
 # Create a named spec file
-bunx spectra create --name "spec-name"
+bunx spectra new --name "spec-name"
 
 # Validate it
 bunx spectra validate [file|dir]
 
-# Compile directives into VS Code Copilot .prompt.md files
-bunx spectra compile [file|dir] --out .github/prompts
+# Compile directives into VS Code Copilot .prompt.md files (uses ide/out from spectra.json)
+bunx spectra compile [file|dir]
 
 # Scan a directory for all spec files
 bunx spectra scan [dir]
@@ -51,22 +51,22 @@ bunx spectra info [file|dir]
 # Diagnose issues
 bunx spectra doctor [file|dir]
 
-# Set up the Copilot agent file
+# Scaffold spectra.json config and agent file
 bunx spectra setup
 ```
 
 ## CLI Reference
 
 ```
-spectra create --name <name> [file]  Create a named .spec.json file
-spectra compile <file|dir>       Compile .prompt.md files from spec directives
-  --ide vscode                   IDE target (default: vscode)
-  --out <dir>                    Output directory (default: .github/prompts/)
-spectra scan [dir]               Recursively find and report all *.spec.json files
-spectra info [file|dir]          Report detailed info about spec file(s)
-spectra doctor [file|dir]        Diagnose and report issues in spec file(s)
-spectra validate <file|dir>      Validate spec(s) against their schemas
-spectra setup                    Scaffold .github/agents/spectra.agent.md
+spectra new --name <name> [file]   Create a named .spec.json file
+spectra compile <file|dir>         Compile .prompt.md files from spec directives
+spectra scan [dir]                 Recursively find and report all *.spec.json files
+spectra info [file|dir]            Report detailed info about spec file(s)
+spectra doctor [file|dir]          Diagnose and report issues in spec file(s)
+spectra validate <file|dir>        Validate spec(s) against their schemas
+spectra setup                      Scaffold spectra.json config and agent file
+  --ide <ide>                      IDE target (default: vscode)
+  --out <dir>                      Output directory (default: .github/prompts/)
 ```
 
 ## Library API

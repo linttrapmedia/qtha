@@ -20,10 +20,13 @@ You have access to the `spectra` CLI tool. Use it via the terminal:
 
 ```bash
 # Create a named spec file
-spectra new --name <name> [filename]
+spectra create --name <name> [filename]
 
-# Compile directives into .prompt.md files (uses ide/out from spectra.json)
-spectra compile <file|dir>
+# Create a new spec file from template
+spectra init [filename]
+
+# Compile directives into .prompt.md files
+spectra compile <file|dir> --out <dir> --ide vscode
 
 # Find all spec files recursively
 spectra scan [dir]
@@ -37,7 +40,7 @@ spectra doctor [file|dir]
 # Validate spec files against their schemas
 spectra validate <file|dir>
 
-# Scaffold spectra.json config and agent file
+# Set up the agent file
 spectra setup
 ```
 
