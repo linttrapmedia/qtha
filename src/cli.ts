@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 
+import { cleanCommand } from "./commands/clean";
 import { compileCommand } from "./commands/compile";
 import { doctorCommand } from "./commands/doctor";
 import { infoCommand } from "./commands/info";
@@ -20,6 +21,7 @@ ${bold("Usage:")}
   ${cyan("spectra doctor")} [file|dir]          Diagnose and report issues in spec file(s)
   ${cyan("spectra validate")} [file|dir]        Validate spec(s) against their schemas
   ${cyan("spectra setup")}                      Scaffold spectra.json config and agent file
+  ${cyan("spectra clean")}                     Remove agent files and clear config results
     --ide <ide>                      IDE target (default: vscode)
     --out <dir>                      Output directory (default: .github/prompts/)
 
@@ -92,6 +94,9 @@ async function main() {
       break;
     case "setup":
       await setupCommand(positional, flags);
+      break;
+    case "clean":
+      await cleanCommand(positional, flags);
       break;
     default:
       console.error(`Unknown command: ${command}\n`);
