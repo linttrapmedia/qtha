@@ -33,7 +33,10 @@ bun link
 ## Quick Start
 
 ```bash
-# Create a new spec file
+# Create a named spec file
+bunx spectra create --name "My App"
+
+# Or create from template
 bunx spectra init my-app.spec.json
 
 # Validate it
@@ -58,6 +61,7 @@ bunx spectra setup
 ## CLI Reference
 
 ```
+spectra create --name <name> [file]  Create a named .spec.json file
 spectra init [file]              Create a new .spec.json template (default: spectra.spec.json)
 spectra compile <file|dir>       Compile .prompt.md files from spec directives
   --ide vscode                   IDE target (default: vscode)

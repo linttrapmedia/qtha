@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { compileCommand } from "./commands/compile";
+import { createCommand } from "./commands/create";
 import { doctorCommand } from "./commands/doctor";
 import { infoCommand } from "./commands/info";
 import { initCommand } from "./commands/init";
@@ -12,6 +13,7 @@ const USAGE = `
 spectra — CLI for managing .spec.json files
 
 Usage:
+  spectra create --name <name> [file] Create a named .spec.json file
   spectra init [file]                Create a new .spec.json template
   spectra compile <file|dir>         Compile .prompt.md files from spec(s)
     --ide vscode                     IDE target (default: vscode)
@@ -71,6 +73,9 @@ async function main() {
   }
 
   switch (command) {
+    case "create":
+      await createCommand(positional, flags);
+      break;
     case "init":
       await initCommand(positional, flags);
       break;

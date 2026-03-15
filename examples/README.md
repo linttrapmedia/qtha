@@ -71,7 +71,15 @@ Output:
 1 spec file(s) found
 ```
 
-### 6. Create a new spec
+### 6. Create a named spec
+
+```bash
+bunx spectra create --name "Test App"
+```
+
+Creates `test-app.spec.json` with the name and id pre-filled.
+
+### 7. Create a spec from template
 
 ```bash
 bunx spectra init test.spec.json

@@ -19,7 +19,10 @@ Spectra is a system for defining, maintaining, and using structured data optimiz
 You have access to the `spectra` CLI tool. Use it via the terminal:
 
 ```bash
-# Create a new spec file
+# Create a named spec file
+spectra create --name <name> [filename]
+
+# Create a new spec file from template
 spectra init [filename]
 
 # Compile directives into .prompt.md files
