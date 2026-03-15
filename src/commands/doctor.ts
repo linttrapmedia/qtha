@@ -1,7 +1,9 @@
 import { stat } from "fs/promises";
 import { resolve } from "path";
+import { updateConfigResults } from "../lib/config";
 import { diagnoseSpec } from "../lib/doctor";
 import { scanForSpecs } from "../lib/scanner";
+import type { DiagnosticResult } from "../lib/types";
 
 export async function doctorCommand(positional: string[], _flags: Record<string, string | boolean>) {
   const target = resolve(process.cwd(), positional[0] ?? ".");
@@ -21,9 +23,11 @@ export async function doctorCommand(positional: string[], _flags: Record<string,
 
   let totalErrors = 0;
   let totalWarnings = 0;
+  const results: DiagnosticResult[] = [];
 
   for (const filePath of specFiles) {
     const result = await diagnoseSpec(filePath);
+    results.push(result);
     totalErrors += result.errors.length;
     totalWarnings += result.warnings.length;
 
@@ -48,6 +52,7 @@ export async function doctorCommand(positional: string[], _flags: Record<string,
     console.log("");
   }
 
+  await updateConfigResults("doctor", results);
   console.log(`${specFiles.length} spec(s) checked, ${totalErrors} error(s), ${totalWarnings} warning(s)`);
 
   if (totalErrors > 0) {

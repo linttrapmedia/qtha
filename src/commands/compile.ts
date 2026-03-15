@@ -1,21 +1,23 @@
 import { stat } from "fs/promises";
 import { resolve } from "path";
+import { readConfig } from "../lib/config";
 import { compilePromptFiles } from "../lib/prompt";
 
 export async function compileCommand(positional: string[], flags: Record<string, string | boolean>) {
   const target = positional[0];
   if (!target) {
-    console.error("Usage: spectra compile <file|dir> [--out <dir>] [--ide vscode]");
+    console.error("Usage: spectra compile <file|dir>");
     process.exit(1);
   }
 
-  const ide = (flags.ide as string) ?? "vscode";
+  const config = await readConfig();
+  const ide = config.ide;
   if (ide !== "vscode") {
     console.error(`Unsupported IDE: ${ide}. Currently only "vscode" is supported.`);
     process.exit(1);
   }
 
-  const outputDir = resolve(process.cwd(), (flags.out as string) ?? ".github/prompts");
+  const outputDir = resolve(process.cwd(), config.out);
   const targetPath = resolve(process.cwd(), target);
 
   const info = await stat(targetPath);

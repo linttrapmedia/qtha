@@ -1,10 +1,9 @@
 #!/usr/bin/env bun
 
 import { compileCommand } from "./commands/compile";
-import { createCommand } from "./commands/create";
 import { doctorCommand } from "./commands/doctor";
 import { infoCommand } from "./commands/info";
-import { initCommand } from "./commands/init";
+import { newCommand } from "./commands/new";
 import { scanCommand } from "./commands/scan";
 import { setupCommand } from "./commands/setup";
 import { validateCommand } from "./commands/validate";
@@ -13,16 +12,15 @@ const USAGE = `
 spectra — CLI for managing .spec.json files
 
 Usage:
-  spectra create --name <name> [file] Create a named .spec.json file
-  spectra init [file]                (deprecated) Use "spectra create" instead
+  spectra new --name <name> [file]   Create a named .spec.json file
   spectra compile <file|dir>         Compile .prompt.md files from spec(s)
-    --ide vscode                     IDE target (default: vscode)
-    --out <dir>                      Output directory (default: .github/prompts/)
   spectra scan [dir]                 Recursively find all *.spec.json files
   spectra info [file|dir]            Report detailed info about spec file(s)
   spectra doctor [file|dir]          Diagnose and report issues in spec file(s)
   spectra validate <file|dir>        Validate spec(s) against their schemas
-  spectra setup                      Scaffold .github/agents/spectra.agent.md
+  spectra setup                      Scaffold spectra.json config and agent file
+    --ide <ide>                      IDE target (default: vscode)
+    --out <dir>                      Output directory (default: .github/prompts/)
 
 Options:
   --help, -h                         Show this help message
@@ -73,11 +71,8 @@ async function main() {
   }
 
   switch (command) {
-    case "create":
-      await createCommand(positional, flags);
-      break;
-    case "init":
-      await initCommand(positional, flags);
+    case "new":
+      await newCommand(positional, flags);
       break;
     case "compile":
       await compileCommand(positional, flags);

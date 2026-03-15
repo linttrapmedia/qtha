@@ -1,7 +1,7 @@
 import { resolve } from "path";
 import { createSpec } from "../lib/spec";
 
-export async function createCommand(positional: string[], flags: Record<string, string | boolean>) {
+export async function newCommand(positional: string[], flags: Record<string, string | boolean>) {
   const name = typeof flags.name === "string" ? flags.name : undefined;
 
   if (!name) {

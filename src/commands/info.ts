@@ -1,7 +1,9 @@
 import { stat } from "fs/promises";
 import { resolve } from "path";
+import { updateConfigResults } from "../lib/config";
 import { getSpecInfo } from "../lib/info";
 import { scanForSpecs } from "../lib/scanner";
+import type { SpecInfo } from "../lib/types";
 
 export async function infoCommand(positional: string[], _flags: Record<string, string | boolean>) {
   const target = resolve(process.cwd(), positional[0] ?? ".");
@@ -19,8 +21,11 @@ export async function infoCommand(positional: string[], _flags: Record<string, s
     return;
   }
 
+  const results: SpecInfo[] = [];
+
   for (const filePath of specFiles) {
     const specInfo = await getSpecInfo(filePath);
+    results.push(specInfo);
 
     console.log(`━━━ ${specInfo.name} ━━━`);
     console.log(`  File:        ${specInfo.filePath}`);
@@ -36,4 +41,6 @@ export async function infoCommand(positional: string[], _flags: Record<string, s
     console.log(`  Design decisions:  ${specInfo.designDecisionCount}`);
     console.log("");
   }
+
+  await updateConfigResults("info", results);
 }

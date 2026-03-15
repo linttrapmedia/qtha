@@ -3,6 +3,7 @@ import { mkdtemp, readdir, rm } from "fs/promises";
 import { tmpdir } from "os";
 import { join, resolve } from "path";
 import type { SpecFile } from "../src/index";
+import type { SpectraConfig } from "../src/lib/config";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -60,42 +61,20 @@ function makeValidSpec(overrides?: Partial<SpecFile>): SpecFile {
   };
 }
 
-// ─── spectra init ────────────────────────────────────────────────────────────
+function makeConfig(overrides?: Partial<SpectraConfig>): SpectraConfig {
+  return {
+    ide: "vscode",
+    out: ".github/prompts",
+    results: { scan: [], info: [], doctor: [], validate: [] },
+    ...overrides,
+  };
+}
 
-describe("spectra init", () => {
-  test("creates a default spec file", async () => {
-    const result = run(["init"]);
-    expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("Created spectra.spec.json");
+// ─── spectra new ─────────────────────────────────────────────────────────────
 
-    const spec = await readJson(join(tmpDir, "spectra.spec.json"));
-    expect(spec.name).toBe("My Spec");
-    expect(spec.id).toBe("my-spec");
-    expect(spec.version).toBe("1.0.0");
-  });
-
-  test("creates a spec with a custom filename", async () => {
-    const result = run(["init", "custom.spec.json"]);
-    expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("Created custom.spec.json");
-
-    const spec = await readJson(join(tmpDir, "custom.spec.json"));
-    expect(spec.name).toBe("My Spec");
-  });
-
-  test("refuses to overwrite an existing file", async () => {
-    await writeJson(join(tmpDir, "spectra.spec.json"), {});
-    const result = run(["init"]);
-    expect(result.exitCode).not.toBe(0);
-    expect(result.stderr).toContain("already exists");
-  });
-});
-
-// ─── spectra create ──────────────────────────────────────────────────────────
-
-describe("spectra create", () => {
+describe("spectra new", () => {
   test("creates a named spec file", async () => {
-    const result = run(["create", "--name", "My App"]);
+    const result = run(["new", "--name", "My App"]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Created my-app.spec.json");
 
@@ -105,7 +84,7 @@ describe("spectra create", () => {
   });
 
   test("creates a spec with a custom output filename", async () => {
-    const result = run(["create", "--name", "Widget", "widget.spec.json"]);
+    const result = run(["new", "--name", "Widget", "widget.spec.json"]);
     expect(result.exitCode).toBe(0);
 
     const spec = await readJson(join(tmpDir, "widget.spec.json"));
@@ -113,14 +92,14 @@ describe("spectra create", () => {
   });
 
   test("fails without --name flag", async () => {
-    const result = run(["create"]);
+    const result = run(["new"]);
     expect(result.exitCode).not.toBe(0);
     expect(result.stderr).toContain("--name");
   });
 
   test("refuses to overwrite an existing file", async () => {
     await writeJson(join(tmpDir, "my-app.spec.json"), {});
-    const result = run(["create", "--name", "My App"]);
+    const result = run(["new", "--name", "My App"]);
     expect(result.exitCode).not.toBe(0);
     expect(result.stderr).toContain("already exists");
   });
@@ -364,7 +343,8 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    const result = run(["compile", p, "--out", outDir]);
+    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    const result = run(["compile", p]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("2 prompt file(s) compiled");
 
@@ -396,7 +376,8 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    run(["compile", p, "--out", outDir]);
+    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "tool-app.setup.prompt.md")).text();
     expect(content).toContain("mode: agent");
@@ -414,7 +395,8 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    run(["compile", p, "--out", outDir]);
+    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "simple.simple.prompt.md")).text();
     expect(content).not.toContain("mode: agent");
@@ -438,7 +420,8 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    run(["compile", p, "--out", outDir]);
+    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "allsteps.all.prompt.md")).text();
     expect(content).toContain("1. Plain text step");
@@ -463,7 +446,8 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    run(["compile", p, "--out", outDir]);
+    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "design.run.prompt.md")).text();
     expect(content).toContain("## Design Decisions");
@@ -489,7 +473,8 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    run(["compile", p, "--out", outDir]);
+    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "changelog.run.prompt.md")).text();
     expect(content).toContain("## Recent Changes");
@@ -517,7 +502,8 @@ describe("spectra compile", () => {
     });
 
     const outDir = join(tmpDir, "prompts");
-    const result = run(["compile", tmpDir, "--out", outDir]);
+    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    const result = run(["compile", tmpDir]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("2 prompt file(s) compiled");
 
@@ -536,7 +522,8 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "deep", "nested", "output");
-    const result = run(["compile", p, "--out", outDir]);
+    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    const result = run(["compile", p]);
     expect(result.exitCode).toBe(0);
 
     const files = await readdir(outDir);
@@ -551,7 +538,8 @@ describe("spectra compile", () => {
   test("compiles the example spec", async () => {
     const examplePath = resolve(import.meta.dir, "../examples/my-app.spec.json");
     const outDir = join(tmpDir, "compiled");
-    const result = run(["compile", examplePath, "--out", outDir]);
+    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    const result = run(["compile", examplePath]);
     expect(result.exitCode).toBe(0);
 
     const files = await readdir(outDir);
@@ -567,7 +555,7 @@ describe("spectra compile", () => {
 // ─── spectra setup ───────────────────────────────────────────────────────────
 
 describe("spectra setup", () => {
-  test("scaffolds agent file", async () => {
+  test("scaffolds agent file and config", async () => {
     const result = run(["setup"]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Created");
@@ -575,12 +563,17 @@ describe("spectra setup", () => {
     const agentPath = join(tmpDir, ".github", "agents", "spectra.agent.md");
     const content = await Bun.file(agentPath).text();
     expect(content.length).toBeGreaterThan(0);
+
+    const config = await readJson(join(tmpDir, "spectra.json"));
+    expect(config.ide).toBe("vscode");
+    expect(config.out).toBe(".github/prompts");
   });
 
-  test("does not overwrite existing agent file", async () => {
+  test("does not overwrite existing agent file or config", async () => {
     run(["setup"]);
     const result = run(["setup"]);
     expect(result.stdout + result.stderr).toContain("Already exists");
+    expect(result.stdout + result.stderr).toContain("Config already exists");
   });
 });
 
@@ -606,9 +599,9 @@ describe("spectra help and version", () => {
 // ─── Integration: end-to-end CLI workflow ────────────────────────────────────
 
 describe("end-to-end CLI workflow", () => {
-  test("create → validate → doctor → info → compile → scan", async () => {
+  test("new → validate → doctor → info → compile → scan", async () => {
     // 1. Create a new spec via CLI
-    let result = run(["create", "--name", "Workflow App"]);
+    let result = run(["new", "--name", "Workflow App"]);
     expect(result.exitCode).toBe(0);
 
     const p = join(tmpDir, "workflow-app.spec.json");
@@ -665,7 +658,8 @@ describe("end-to-end CLI workflow", () => {
 
     // 6. Compile
     const outDir = join(tmpDir, "prompts");
-    result = run(["compile", p, "--out", outDir]);
+    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    result = run(["compile", p]);
     expect(result.exitCode).toBe(0);
 
     const files = await readdir(outDir);

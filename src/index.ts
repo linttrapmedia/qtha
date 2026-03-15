@@ -14,8 +14,8 @@ export type {
   ScanOptions,
   SchemaData,
   SchemaRef,
-  SchemaTypeValue,
   SchemaTypes,
+  SchemaTypeValue,
   SnippetStep,
   SpecFile,
   SpecInfo,
@@ -25,6 +25,10 @@ export type {
   ValidationError,
   ValidationResult,
 } from "./lib/types";
+
+export type { ScanResult, SpectraConfig, ValidateResult } from "./lib/config";
+
+export { configPath, defaultConfig, initConfig, readConfig, updateConfigResults, writeConfig } from "./lib/config";
 
 export {
   addChangeLogEntry,

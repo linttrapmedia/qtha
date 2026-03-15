@@ -36,23 +36,20 @@ bun link
 # Create a named spec file
 bunx spectra create --name "spec-name"
 
-# Or create from template
-bunx spectra init my-app.spec.json
-
 # Validate it
-bunx spectra validate my-app.spec.json
+bunx spectra validate [file|dir]
 
 # Compile directives into VS Code Copilot .prompt.md files
-bunx spectra compile my-app.spec.json --out .github/prompts
+bunx spectra compile [file|dir] --out .github/prompts
 
 # Scan a directory for all spec files
-bunx spectra scan .
+bunx spectra scan [dir]
 
 # Get detailed info about a spec
-bunx spectra info my-app.spec.json
+bunx spectra info [file|dir]
 
 # Diagnose issues
-bunx spectra doctor my-app.spec.json
+bunx spectra doctor [file|dir]
 
 # Set up the Copilot agent file
 bunx spectra setup
@@ -62,7 +59,6 @@ bunx spectra setup
 
 ```
 spectra create --name <name> [file]  Create a named .spec.json file
-spectra init [file]              Create a new .spec.json template (default: spectra.spec.json)
 spectra compile <file|dir>       Compile .prompt.md files from spec directives
   --ide vscode                   IDE target (default: vscode)
   --out <dir>                    Output directory (default: .github/prompts/)
