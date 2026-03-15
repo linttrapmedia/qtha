@@ -1,14 +1,11 @@
 import { stat } from "fs/promises";
 import { resolve } from "path";
+import { bold, cyan, dim, green, LOGO } from "../lib/color";
 import { readConfig } from "../lib/config";
 import { compilePromptFiles } from "../lib/prompt";
 
 export async function compileCommand(positional: string[], flags: Record<string, string | boolean>) {
-  const target = positional[0];
-  if (!target) {
-    console.error("Usage: spectra compile <file|dir>");
-    process.exit(1);
-  }
+  const target = positional[0] ?? ".";
 
   const config = await readConfig();
   const ide = config.ide;
@@ -37,14 +34,15 @@ export async function compileCommand(positional: string[], flags: Record<string,
     specFiles = [targetPath];
   }
 
+  console.log(`${cyan(LOGO)} ${bold("compile")}\n`);
   let totalCompiled = 0;
   for (const specPath of specFiles) {
     const written = await compilePromptFiles(specPath, outputDir, ide as "vscode");
     for (const f of written) {
-      console.log(`  compiled: ${f}`);
+      console.log(`  ${green("✓")} ${f}`);
     }
     totalCompiled += written.length;
   }
 
-  console.log(`\n${totalCompiled} prompt file(s) compiled to ${outputDir}`);
+  console.log(`\n${dim(`${totalCompiled} prompt file(s) compiled to ${outputDir}`)}`);
 }

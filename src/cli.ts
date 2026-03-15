@@ -7,22 +7,23 @@ import { newCommand } from "./commands/new";
 import { scanCommand } from "./commands/scan";
 import { setupCommand } from "./commands/setup";
 import { validateCommand } from "./commands/validate";
+import { bold, cyan, dim, LOGO } from "./lib/color";
 
 const USAGE = `
-spectra — CLI for managing .spec.json files
+${bold(cyan(`${LOGO} Spectra`))} ${dim("— CLI for managing .spec.json files")}
 
-Usage:
-  spectra new --name <name> [file]   Create a named .spec.json file
-  spectra compile <file|dir>         Compile .prompt.md files from spec(s)
-  spectra scan [dir]                 Recursively find all *.spec.json files
-  spectra info [file|dir]            Report detailed info about spec file(s)
-  spectra doctor [file|dir]          Diagnose and report issues in spec file(s)
-  spectra validate <file|dir>        Validate spec(s) against their schemas
-  spectra setup                      Scaffold spectra.json config and agent file
+${bold("Usage:")}
+  ${cyan("spectra new")} --name <name> [file]   Create a named .spec.json file
+  ${cyan("spectra compile")} [file|dir]         Compile .prompt.md files from spec(s)
+  ${cyan("spectra scan")} [dir]                 Recursively find all *.spec.json files
+  ${cyan("spectra info")} [file|dir]            Report detailed info about spec file(s)
+  ${cyan("spectra doctor")} [file|dir]          Diagnose and report issues in spec file(s)
+  ${cyan("spectra validate")} [file|dir]        Validate spec(s) against their schemas
+  ${cyan("spectra setup")}                      Scaffold spectra.json config and agent file
     --ide <ide>                      IDE target (default: vscode)
     --out <dir>                      Output directory (default: .github/prompts/)
 
-Options:
+${bold("Options:")}
   --help, -h                         Show this help message
   --version, -v                      Show version
 `.trim();

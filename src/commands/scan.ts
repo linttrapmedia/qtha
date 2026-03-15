@@ -1,4 +1,5 @@
-import { resolve } from "path";
+import { relative, resolve } from "path";
+import { bold, cyan, dim, LOGO } from "../lib/color";
 import { updateConfigResults, type ScanResult } from "../lib/config";
 import { scanForSpecs } from "../lib/scanner";
 import { readSpec } from "../lib/spec";
@@ -12,20 +13,21 @@ export async function scanCommand(positional: string[], _flags: Record<string, s
     return;
   }
 
+  console.log(`${cyan(LOGO)} ${bold("scan")}\n`);
   const results: ScanResult[] = [];
 
   for (const filePath of specFiles) {
     try {
       const spec = await readSpec(filePath);
-      results.push({ filePath, name: spec.name, description: spec.description });
-      console.log(`  ${filePath}`);
-      console.log(`    name: ${spec.name}`);
-      console.log(`    description: ${spec.description}`);
+      const relPath = relative(process.cwd(), filePath);
+      results.push({ filePath: relPath, name: spec.name, description: spec.description });
+      console.log(`  ${cyan("●")} ${relPath}`);
+      console.log(`    ${bold(spec.name)} ${dim("—")} ${dim(spec.description)}`);
     } catch {
-      console.log(`  ${filePath} (unreadable)`);
+      console.log(`  ${dim("●")} ${dim(`${filePath} (unreadable)`)}`);
     }
   }
 
   await updateConfigResults("scan", results);
-  console.log(`\n${specFiles.length} spec file(s) found`);
+  console.log(`\n${dim(`${specFiles.length} spec file(s) found`)}`);
 }

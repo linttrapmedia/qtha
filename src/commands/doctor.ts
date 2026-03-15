@@ -1,5 +1,6 @@
 import { stat } from "fs/promises";
-import { resolve } from "path";
+import { relative, resolve } from "path";
+import { bold, cyan, dim, green, LOGO, red, yellow } from "../lib/color";
 import { updateConfigResults } from "../lib/config";
 import { diagnoseSpec } from "../lib/doctor";
 import { scanForSpecs } from "../lib/scanner";
@@ -25,35 +26,37 @@ export async function doctorCommand(positional: string[], _flags: Record<string,
   let totalWarnings = 0;
   const results: DiagnosticResult[] = [];
 
+  console.log(`${cyan(LOGO)} ${bold("doctor")}\n`);
   for (const filePath of specFiles) {
     const result = await diagnoseSpec(filePath);
-    results.push(result);
+    const relPath = relative(process.cwd(), filePath);
+    results.push({ ...result, filePath: relPath });
     totalErrors += result.errors.length;
     totalWarnings += result.warnings.length;
 
     if (result.ok && result.warnings.length === 0) {
-      console.log(`✓ ${filePath}`);
+      console.log(`${green("✓")} ${relPath}`);
       continue;
     }
 
-    console.log(`━━━ ${filePath} ━━━`);
+    console.log(`${cyan("━━━")} ${bold(relPath)} ${cyan("━━━")}`);
     for (const err of result.errors) {
-      console.log(`  ✗ ERROR   ${err.path}: ${err.message}`);
+      console.log(`  ${red("✗ ERROR")}   ${dim(err.path + ":")} ${err.message}`);
       if (err.suggestion) {
-        console.log(`            → ${err.suggestion}`);
+        console.log(`            ${dim("→")} ${err.suggestion}`);
       }
     }
     for (const warn of result.warnings) {
-      console.log(`  ⚠ WARNING ${warn.path}: ${warn.message}`);
+      console.log(`  ${yellow("⚠ WARNING")} ${dim(warn.path + ":")} ${warn.message}`);
       if (warn.suggestion) {
-        console.log(`            → ${warn.suggestion}`);
+        console.log(`            ${dim("→")} ${warn.suggestion}`);
       }
     }
     console.log("");
   }
 
   await updateConfigResults("doctor", results);
-  console.log(`${specFiles.length} spec(s) checked, ${totalErrors} error(s), ${totalWarnings} warning(s)`);
+  console.log(dim(`${specFiles.length} spec(s) checked, ${totalErrors} error(s), ${totalWarnings} warning(s)`));
 
   if (totalErrors > 0) {
     process.exit(1);

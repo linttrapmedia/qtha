@@ -150,9 +150,10 @@ describe("spectra validate", () => {
     expect(result.stdout).toContain("✗");
   });
 
-  test("fails with no arguments", async () => {
+  test("defaults to current directory with no arguments", async () => {
+    await writeJson(join(tmpDir, "x.spec.json"), makeValidSpec({ id: "x", name: "X" }));
     const result = run(["validate"]);
-    expect(result.exitCode).not.toBe(0);
+    expect(result.exitCode).toBe(0);
   });
 
   test("validates the example spec", async () => {
@@ -530,9 +531,10 @@ describe("spectra compile", () => {
     expect(files).toHaveLength(1);
   });
 
-  test("fails with no arguments", async () => {
+  test("defaults to current directory with no arguments", async () => {
+    await writeJson(join(tmpDir, "x.spec.json"), makeValidSpec({ id: "x", name: "X" }));
     const result = run(["compile"]);
-    expect(result.exitCode).not.toBe(0);
+    expect(result.exitCode).toBe(0);
   });
 
   test("compiles the example spec", async () => {

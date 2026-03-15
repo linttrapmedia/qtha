@@ -1,5 +1,6 @@
 import { stat } from "fs/promises";
-import { resolve } from "path";
+import { relative, resolve } from "path";
+import { bold, cyan, dim, LOGO } from "../lib/color";
 import { updateConfigResults } from "../lib/config";
 import { getSpecInfo } from "../lib/info";
 import { scanForSpecs } from "../lib/scanner";
@@ -21,24 +22,26 @@ export async function infoCommand(positional: string[], _flags: Record<string, s
     return;
   }
 
+  console.log(`${cyan(LOGO)} ${bold("info")}\n`);
   const results: SpecInfo[] = [];
 
   for (const filePath of specFiles) {
     const specInfo = await getSpecInfo(filePath);
-    results.push(specInfo);
+    const relPath = relative(process.cwd(), specInfo.filePath);
+    results.push({ ...specInfo, filePath: relPath });
 
-    console.log(`━━━ ${specInfo.name} ━━━`);
-    console.log(`  File:        ${specInfo.filePath}`);
-    console.log(`  Description: ${specInfo.description}`);
-    console.log(`  Version:     ${specInfo.version}`);
-    console.log(`  Directives:  ${specInfo.directives.length}`);
+    console.log(`${cyan("━━━")} ${bold(specInfo.name)} ${cyan("━━━")}`);
+    console.log(`  ${dim("File:")}        ${relPath}`);
+    console.log(`  ${dim("Description:")} ${specInfo.description}`);
+    console.log(`  ${dim("Version:")}     ${specInfo.version}`);
+    console.log(`  ${dim("Directives:")}  ${specInfo.directives.length}`);
     for (const d of specInfo.directives) {
-      console.log(`    • ${d.name} — ${d.description} (${d.stepCount} steps)`);
+      console.log(`    ${cyan("•")} ${bold(d.name)} ${dim("—")} ${d.description} ${dim(`(${d.stepCount} steps)`)}`);
     }
-    console.log(`  Schema types:      ${specInfo.schemaTypeCount}`);
-    console.log(`  Data keys:         ${specInfo.dataKeys.join(", ") || "(none)"}`);
-    console.log(`  Changelog entries: ${specInfo.changeLogCount}`);
-    console.log(`  Design decisions:  ${specInfo.designDecisionCount}`);
+    console.log(`  ${dim("Schema types:")}      ${specInfo.schemaTypeCount}`);
+    console.log(`  ${dim("Data keys:")}         ${specInfo.dataKeys.join(", ") || dim("(none)")}`);
+    console.log(`  ${dim("Changelog entries:")} ${specInfo.changeLogCount}`);
+    console.log(`  ${dim("Design decisions:")}  ${specInfo.designDecisionCount}`);
     console.log("");
   }
 

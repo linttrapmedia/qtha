@@ -1,4 +1,5 @@
 import { resolve } from "path";
+import { bold, cyan, dim, green, LOGO } from "../lib/color";
 import { createSpec } from "../lib/spec";
 
 export async function newCommand(positional: string[], flags: Record<string, string | boolean>) {
@@ -20,5 +21,6 @@ export async function newCommand(positional: string[], flags: Record<string, str
   }
 
   await createSpec(filePath, { name, id });
-  console.log(`Created ${fileName}`);
+  console.log(`${cyan(LOGO)} ${bold("new")}\n`);
+  console.log(`${green("✓")} Created ${dim(fileName)}`);
 }

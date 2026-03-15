@@ -1,17 +1,13 @@
 import { stat } from "fs/promises";
-import { resolve } from "path";
+import { relative, resolve } from "path";
+import { bold, cyan, dim, green, LOGO, red } from "../lib/color";
 import { updateConfigResults, type ValidateResult } from "../lib/config";
 import { scanForSpecs } from "../lib/scanner";
 import { readSpec } from "../lib/spec";
 import { validateSpec } from "../lib/validator";
 
 export async function validateCommand(positional: string[], _flags: Record<string, string | boolean>) {
-  const target = positional[0];
-  if (!target) {
-    console.error("Usage: spectra validate <file|dir>");
-    process.exit(1);
-  }
-
+  const target = positional[0] ?? ".";
   const targetPath = resolve(process.cwd(), target);
   const info = await stat(targetPath);
   let specFiles: string[];
@@ -27,21 +23,23 @@ export async function validateCommand(positional: string[], _flags: Record<strin
     return;
   }
 
+  console.log(`${cyan(LOGO)} ${bold("validate")}\n`);
   let hasErrors = false;
   const results: ValidateResult[] = [];
 
   for (const filePath of specFiles) {
     const spec = await readSpec(filePath);
     const result = validateSpec(spec);
-    results.push({ filePath, valid: result.valid, errors: result.errors });
+    const relPath = relative(process.cwd(), filePath);
+    results.push({ filePath: relPath, valid: result.valid, errors: result.errors });
 
     if (result.valid) {
-      console.log(`✓ ${filePath}`);
+      console.log(`${green("✓")} ${relPath}`);
     } else {
       hasErrors = true;
-      console.log(`✗ ${filePath}`);
+      console.log(`${red("✗")} ${relPath}`);
       for (const err of result.errors) {
-        console.log(`  ${err.path}: ${err.message}`);
+        console.log(`  ${dim(err.path + ":")} ${err.message}`);
       }
     }
   }
