@@ -34,7 +34,7 @@ bun link
 
 ```bash
 # Create a named spec file
-bunx spectra create --name "My App"
+bunx spectra create --name "spec-name"
 
 # Or create from template
 bunx spectra init my-app.spec.json
