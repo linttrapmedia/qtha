@@ -2,7 +2,7 @@
   "ref": "git",
   "id": "test",
   "name": "test",
-  "description": "A new Spectra spec file",
+  "description": "A new Coda spec file",
   "version": "1.0.0",
   "meta": {
     "changeLog": [
@@ -12,9 +12,7 @@
         "timestamp": "2026-01-01T00:00:00Z",
         "authors": [],
         "references": [],
-        "tags": [
-          "init"
-        ]
+        "tags": ["init"]
       }
     ],
     "design": [],

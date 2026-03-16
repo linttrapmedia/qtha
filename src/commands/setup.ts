@@ -8,7 +8,7 @@ const AGENT_TEMPLATE_PATH = resolve(import.meta.dir, "../templates/agent.templat
 export async function setupCommand(_positional: string[], flags: Record<string, string | boolean>) {
   console.log(`${cyan(LOGO)} ${bold("setup")}\n`);
 
-  // ─── Initialize spectra.json config ──────────────────────────────────────
+  // ─── Initialize coda.json config ──────────────────────────────────────
   const cfgPath = configPath();
   const cfgFile = Bun.file(cfgPath);
   if (await cfgFile.exists()) {
@@ -22,7 +22,7 @@ export async function setupCommand(_positional: string[], flags: Record<string, 
 
   // ─── Scaffold agent file ─────────────────────────────────────────────────
   const outDir = resolve(process.cwd(), ".github/agents");
-  const outPath = resolve(outDir, "spectra.agent.md");
+  const outPath = resolve(outDir, "coda.agent.md");
 
   const file = Bun.file(outPath);
   if (await file.exists()) {

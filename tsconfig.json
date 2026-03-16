@@ -14,7 +14,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@spectra/*": ["./src/*"]
+      "@coda/*": ["./src/*"]
     },
     "types": ["bun-types"]
   },

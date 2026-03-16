@@ -29,7 +29,7 @@ export async function cleanCommand(_positional: string[], _flags: Record<string,
   }
 
   // ─── Remove scaffolded agent file ────────────────────────────────────────
-  const agentPath = resolve(process.cwd(), ".github/agents/spectra.agent.md");
+  const agentPath = resolve(process.cwd(), ".github/agents/coda.agent.md");
   const agentFile = Bun.file(agentPath);
   if (await agentFile.exists()) {
     await rm(agentPath);
@@ -39,11 +39,11 @@ export async function cleanCommand(_positional: string[], _flags: Record<string,
   }
 
   // ─── Clear results in config ─────────────────────────────────────────────
-  const cfgFile = Bun.file(resolve(process.cwd(), "spectra.json"));
+  const cfgFile = Bun.file(resolve(process.cwd(), "coda.json"));
   if (await cfgFile.exists()) {
     config.results = defaultConfig().results;
     await writeConfig(config);
-    console.log(`  ${green("✓")} Cleared results in ${dim("spectra.json")}`);
+    console.log(`  ${green("✓")} Cleared results in ${dim("coda.json")}`);
   } else {
     console.log(`  ${yellow("●")} No config file found`);
   }

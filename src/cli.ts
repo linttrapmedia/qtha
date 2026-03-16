@@ -10,16 +10,16 @@ import { validateCommand } from "./commands/validate";
 import { bold, cyan, dim, LOGO } from "./lib/color";
 
 const USAGE = `
-${bold(cyan(`${LOGO} Spectra`))} ${dim("— CLI for managing .spec.json files")}
+${bold(cyan(`${LOGO} Coda`))} ${dim("— CLI for managing .spec.json files")}
 
 ${bold("Usage:")}
-  ${cyan("spectra new")} --name <name> [file]   Create a named .spec.json file
-  ${cyan("spectra compile")} [file|dir]         Compile .prompt.md files from spec(s)
-  ${cyan("spectra info")} [file|dir]            Report detailed info about spec file(s)
-  ${cyan("spectra doctor")} [file|dir]          Diagnose and report issues in spec file(s)
-  ${cyan("spectra validate")} [file|dir]        Validate spec(s) against their schemas
-  ${cyan("spectra clean")}                     Remove agent files and clear config results
-  ${cyan("spectra setup")}                      Scaffold spectra.json config and agent file
+  ${cyan("coda new")} --name <name> [file]   Create a named .spec.json file
+  ${cyan("coda compile")} [file|dir]         Compile .prompt.md files from spec(s)
+  ${cyan("coda info")} [file|dir]            Report detailed info about spec file(s)
+  ${cyan("coda doctor")} [file|dir]          Diagnose and report issues in spec file(s)
+  ${cyan("coda validate")} [file|dir]        Validate spec(s) against their schemas
+  ${cyan("coda clean")}                     Remove agent files and clear config results
+  ${cyan("coda setup")}                      Scaffold coda.json config and agent file
     --ide <ide>                      IDE target (default: vscode)
     --out <dir>                      Output directory (default: .github/prompts/)
 

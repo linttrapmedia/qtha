@@ -3,7 +3,7 @@ import { mkdtemp, readdir, rm } from "fs/promises";
 import { tmpdir } from "os";
 import { join, resolve } from "path";
 import type { SpecFile } from "../src/index";
-import type { SpectraConfig } from "../src/lib/config";
+import type { CodaConfig } from "../src/lib/config";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -12,7 +12,7 @@ const CLI = resolve(import.meta.dir, "../src/cli.ts");
 let tmpDir: string;
 
 beforeEach(async () => {
-  tmpDir = await mkdtemp(join(tmpdir(), "spectra-cli-test-"));
+  tmpDir = await mkdtemp(join(tmpdir(), "coda-cli-test-"));
 });
 
 afterEach(async () => {
@@ -61,18 +61,18 @@ function makeValidSpec(overrides?: Partial<SpecFile>): SpecFile {
   };
 }
 
-function makeConfig(overrides?: Partial<SpectraConfig>): SpectraConfig {
+function makeConfig(overrides?: Partial<CodaConfig>): CodaConfig {
   return {
     ide: "vscode",
     out: ".github/prompts",
-    results: { scan: [], info: [], doctor: [], validate: [] },
+    results: { info: [], doctor: [], validate: [] },
     ...overrides,
   };
 }
 
-// ─── spectra new ─────────────────────────────────────────────────────────────
+// ─── coda new ─────────────────────────────────────────────────────────────
 
-describe("spectra new", () => {
+describe("coda new", () => {
   test("creates a named spec file", async () => {
     const result = run(["new", "--name", "My App"]);
     expect(result.exitCode).toBe(0);
@@ -105,9 +105,9 @@ describe("spectra new", () => {
   });
 });
 
-// ─── spectra validate ────────────────────────────────────────────────────────
+// ─── coda validate ────────────────────────────────────────────────────────
 
-describe("spectra validate", () => {
+describe("coda validate", () => {
   test("passes for a valid spec file", async () => {
     const p = specPath();
     await writeJson(p, makeValidSpec());
@@ -157,16 +157,16 @@ describe("spectra validate", () => {
   });
 
   test("validates the example spec", async () => {
-    const examplePath = resolve(import.meta.dir, "../examples/my-app.spec.json");
+    const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.spec.json");
     const result = run(["validate", examplePath]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("✓");
   });
 });
 
-// ─── spectra doctor ──────────────────────────────────────────────────────────
+// ─── coda doctor ──────────────────────────────────────────────────────────
 
-describe("spectra doctor", () => {
+describe("coda doctor", () => {
   test("reports ok for a well-formed spec", async () => {
     const spec = makeValidSpec();
     spec.meta.directives = {
@@ -238,7 +238,7 @@ describe("spectra doctor", () => {
   });
 
   test("diagnoses the example spec without errors", async () => {
-    const examplePath = resolve(import.meta.dir, "../examples/my-app.spec.json");
+    const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.spec.json");
     const result = run(["doctor", examplePath]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("0 error(s)");
@@ -253,48 +253,9 @@ describe("spectra doctor", () => {
   });
 });
 
-// ─── spectra scan ────────────────────────────────────────────────────────────
+// ─── coda info ────────────────────────────────────────────────────────────
 
-describe("spectra scan", () => {
-  test("finds spec files in a directory", async () => {
-    await writeJson(join(tmpDir, "a.spec.json"), makeValidSpec({ id: "a", name: "A" }));
-    await writeJson(join(tmpDir, "b.spec.json"), makeValidSpec({ id: "b", name: "B" }));
-    await writeJson(join(tmpDir, "c.json"), {}); // should NOT match
-
-    const result = run(["scan", tmpDir]);
-    expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("2 spec file(s) found");
-    expect(result.stdout).toContain("a.spec.json");
-    expect(result.stdout).toContain("b.spec.json");
-    expect(result.stdout).not.toContain("/c.json");
-  });
-
-  test("reports when no specs are found", async () => {
-    const result = run(["scan", tmpDir]);
-    expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("No .spec.json files found");
-  });
-
-  test("shows spec name and description", async () => {
-    await writeJson(join(tmpDir, "app.spec.json"), makeValidSpec({ name: "My App", description: "App desc" }));
-
-    const result = run(["scan", tmpDir]);
-    expect(result.stdout).toContain("My App");
-    expect(result.stdout).toContain("App desc");
-  });
-
-  test("defaults to current directory", async () => {
-    await writeJson(join(tmpDir, "root.spec.json"), makeValidSpec({ name: "Root" }));
-
-    const result = run(["scan"]);
-    expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("1 spec file(s) found");
-  });
-});
-
-// ─── spectra info ────────────────────────────────────────────────────────────
-
-describe("spectra info", () => {
+describe("coda info", () => {
   test("shows spec info for a file", async () => {
     const spec = makeValidSpec();
     spec.meta.schema.types = { Role: ["admin", "user"] };
@@ -331,9 +292,9 @@ describe("spectra info", () => {
   });
 });
 
-// ─── spectra compile ─────────────────────────────────────────────────────────
+// ─── coda compile ─────────────────────────────────────────────────────────
 
-describe("spectra compile", () => {
+describe("coda compile", () => {
   test("compiles prompt files from a spec", async () => {
     const spec = makeValidSpec({ id: "app", name: "App" });
     spec.meta.directives = {
@@ -344,7 +305,7 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
     const result = run(["compile", p]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("2 prompt file(s) compiled");
@@ -377,29 +338,10 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
     run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "tool-app.setup.prompt.md")).text();
-    expect(content).toContain("mode: agent");
-    expect(content).toContain("tools:");
-    expect(content).toContain("  - terminal");
-    expect(content).toContain("  - file_system");
-  });
-
-  test("omits mode/tools for text-only directives", async () => {
-    const spec = makeValidSpec({ id: "simple", name: "Simple" });
-    spec.meta.directives = {
-      simple: { description: "Simple", steps: [{ type: "text", description: "Just text" }] },
-    };
-    const p = specPath("simple.spec.json");
-    await writeJson(p, spec);
-
-    const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
-    run(["compile", p]);
-
-    const content = await Bun.file(join(outDir, "simple.simple.prompt.md")).text();
     expect(content).not.toContain("mode: agent");
     expect(content).not.toContain("tools:");
   });
@@ -421,7 +363,7 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
     run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "allsteps.all.prompt.md")).text();
@@ -447,7 +389,7 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
     run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "design.run.prompt.md")).text();
@@ -474,7 +416,7 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
     run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "changelog.run.prompt.md")).text();
@@ -503,7 +445,7 @@ describe("spectra compile", () => {
     });
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
     const result = run(["compile", tmpDir]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("2 prompt file(s) compiled");
@@ -523,7 +465,7 @@ describe("spectra compile", () => {
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "deep", "nested", "output");
-    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
     const result = run(["compile", p]);
     expect(result.exitCode).toBe(0);
 
@@ -538,9 +480,9 @@ describe("spectra compile", () => {
   });
 
   test("compiles the example spec", async () => {
-    const examplePath = resolve(import.meta.dir, "../examples/my-app.spec.json");
+    const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.spec.json");
     const outDir = join(tmpDir, "compiled");
-    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
     const result = run(["compile", examplePath]);
     expect(result.exitCode).toBe(0);
 
@@ -554,19 +496,19 @@ describe("spectra compile", () => {
   });
 });
 
-// ─── spectra setup ───────────────────────────────────────────────────────────
+// ─── coda setup ───────────────────────────────────────────────────────────
 
-describe("spectra setup", () => {
+describe("coda setup", () => {
   test("scaffolds agent file and config", async () => {
     const result = run(["setup"]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Created");
 
-    const agentPath = join(tmpDir, ".github", "agents", "spectra.agent.md");
+    const agentPath = join(tmpDir, ".github", "agents", "coda.agent.md");
     const content = await Bun.file(agentPath).text();
     expect(content.length).toBeGreaterThan(0);
 
-    const config = await readJson(join(tmpDir, "spectra.json"));
+    const config = await readJson(join(tmpDir, "coda.json"));
     expect(config.ide).toBe("vscode");
     expect(config.out).toBe(".github/prompts");
   });
@@ -579,13 +521,13 @@ describe("spectra setup", () => {
   });
 });
 
-// ─── spectra --help / --version ──────────────────────────────────────────────
+// ─── coda --help / --version ──────────────────────────────────────────────
 
-describe("spectra help and version", () => {
+describe("coda help and version", () => {
   test("--help shows usage", () => {
     const result = run(["--help"]);
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("spectra");
+    expect(result.stdout).toContain("coda");
     expect(result.stdout).toContain("compile");
     expect(result.stdout).toContain("validate");
   });
@@ -601,7 +543,7 @@ describe("spectra help and version", () => {
 // ─── Integration: end-to-end CLI workflow ────────────────────────────────────
 
 describe("end-to-end CLI workflow", () => {
-  test("new → validate → doctor → info → compile → scan", async () => {
+  test("new → validate → doctor → info → compile", async () => {
     // 1. Create a new spec via CLI
     let result = run(["new", "--name", "Workflow App"]);
     expect(result.exitCode).toBe(0);
@@ -660,7 +602,7 @@ describe("end-to-end CLI workflow", () => {
 
     // 6. Compile
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "spectra.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
     result = run(["compile", p]);
     expect(result.exitCode).toBe(0);
 
@@ -672,15 +614,10 @@ describe("end-to-end CLI workflow", () => {
     const addItemFile = files.find((f) => f.includes("addItem"))!;
     const promptContent = await Bun.file(join(outDir, addItemFile)).text();
     expect(promptContent).toContain("# Workflow App — addItem");
-    expect(promptContent).toContain("mode: agent");
+    expect(promptContent).not.toContain("mode: agent");
     expect(promptContent).toContain("{{title}}");
     expect(promptContent).toContain("{{status}}");
     expect(promptContent).toContain("## Design Decisions");
     expect(promptContent).toContain("## Recent Changes");
-
-    // 7. Scan
-    result = run(["scan", tmpDir]);
-    expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("workflow-app.spec.json");
   });
 });

@@ -1,10 +1,10 @@
 {
-  "name": "@linttrap/spectra",
+  "name": "@linttrap/coda",
   "version": "0.1.0",
   "type": "module",
   "description": "CLI and library for managing .spec.json files — structured data optimized for LLMs",
   "bin": {
-    "spectra": "./src/cli.ts"
+    "coda": "./src/cli.ts"
   },
   "exports": {
     ".": "./src/index.ts"
@@ -13,10 +13,10 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "bun run tests/spectra.test.ts"
+    "test": "bun run tests/coda.test.ts"
   },
   "keywords": [
-    "spectra",
+    "coda",
     "spec",
     "llm",
     "cli",

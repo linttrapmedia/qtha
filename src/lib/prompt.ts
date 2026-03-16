@@ -16,15 +16,6 @@ export function compilePromptFile(specFile: SpecFile, directiveName: string, _id
   lines.push(`name: "${specFile.name}"`);
   lines.push(`description: "${directive.description}"`);
 
-  // Collect all promptString / pickString inputs for VS Code args
-  const inputs = directive.steps.filter((s) => s.type === "promptString" || s.type === "pickString");
-  if (inputs.length > 0) {
-    lines.push("mode: agent");
-    lines.push("tools:");
-    lines.push("  - terminal");
-    lines.push("  - file_system");
-  }
-
   lines.push("---");
   lines.push("");
 

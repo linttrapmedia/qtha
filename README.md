@@ -1,31 +1,31 @@
-# <♼> Spectra
+# <♬> Coda
 
-Spectra is a library and convention for defining, maintaining, and using structured data in a way that’s optimized for large language models (LLMs). At its core, Spectra uses standardized `.spec.json` files that contain both data and metadata—tracking design decisions, changes, and generation instructions.
+Coda is a library and convention for defining, maintaining, and using structured data in a way that's optimized for large language models (LLMs). At its core, Coda uses standardized `.spec.json` files that contain both data and metadata—tracking design decisions, changes, and generation instructions.
 
 ## Requirements
 
-Spectra requires [Bun](https://bun.sh) — it runs TypeScript directly with no build step.
+Coda requires [Bun](https://bun.sh) — it runs TypeScript directly with no build step.
 
 ## Installation
 
 ### Quick Start (no install)
 
 ```bash
-bunx @linttrap/spectra --help
+bunx @linttrap/coda --help
 ```
 
 ### Add to a project
 
 ```bash
-bun add -d @linttrap/spectra
-bunx spectra --help
+bun add -d @linttrap/coda
+bunx coda --help
 ```
 
 ### Contributing
 
 ```bash
-git clone https://github.com/linttrapmedia/spectra.git
-cd spectra
+git clone https://github.com/linttrapmedia/coda.git
+cd coda
 bun install
 bun link
 ```
@@ -34,40 +34,40 @@ bun link
 
 ```bash
 # Create a named spec file
-bunx spectra new --name "spec-name"
+bunx coda new --name "spec-name"
 
 # Validate it
-bunx spectra validate [file|dir]
+bunx coda validate [file|dir]
 
-# Compile directives into VS Code Copilot .prompt.md files (uses ide/out from spectra.json)
-bunx spectra compile [file|dir]
+# Compile directives into VS Code Copilot .prompt.md files (uses ide/out from coda.json)
+bunx coda compile [file|dir]
 
 # Get detailed info about a spec
-bunx spectra info [file|dir]
+bunx coda info [file|dir]
 
 # Diagnose issues
-bunx spectra doctor [file|dir]
+bunx coda doctor [file|dir]
 
-# Scaffold spectra.json config and agent file
-bunx spectra setup
+# Scaffold coda.json config and agent file
+bunx coda setup
 ```
 
 ## CLI Reference
 
 ```
-spectra new --name <name> [file]   Create a named .spec.json file
-spectra compile <file|dir>         Compile .prompt.md files from spec directives
-spectra info [file|dir]            Report detailed info about spec file(s)
-spectra doctor [file|dir]          Diagnose and report issues in spec file(s)
-spectra validate <file|dir>        Validate spec(s) against their schemas
-spectra setup                      Scaffold spectra.json config and agent file
+coda new --name <name> [file]   Create a named .spec.json file
+coda compile <file|dir>         Compile .prompt.md files from spec directives
+coda info [file|dir]            Report detailed info about spec file(s)
+coda doctor [file|dir]          Diagnose and report issues in spec file(s)
+coda validate <file|dir>        Validate spec(s) against their schemas
+coda setup                      Scaffold coda.json config and agent file
   --ide <ide>                      IDE target (default: vscode)
   --out <dir>                      Output directory (default: .github/prompts/)
 ```
 
 ## Library API
 
-Use Spectra programmatically in your own scripts:
+Use Coda programmatically in your own scripts:
 
 ```typescript
 import {
@@ -86,7 +86,7 @@ import {
   validateSpec,
   getSpecInfo,
   diagnoseSpec,
-} from "@linttrap/spectra";
+} from "@linttrap/coda";
 
 // Read a spec
 const spec = await readSpec("my-app.spec.json");
@@ -109,12 +109,12 @@ const diagnosis = await diagnoseSpec("my-app.spec.json");
 
 ---
 
-The Spectra command-line utility scans your codebase for `.spec.json` files, reads their metadata, and generates LLM prompts that include **directives**: scripted instructions for automated tasks. These directives fall into two categories:
+The Coda command-line utility scans your codebase for `.spec.json` files, reads their metadata, and generates LLM prompts that include **directives**: scripted instructions for automated tasks. These directives fall into two categories:
 
-1. **Spec-focused tasks:** Scripts that modify the spec itself, using Spectra’s built-in utilities to ensure the file remains valid.
-2. **User-defined tasks:** Scripts that operate on the data to generate other code, gather information about the app, or perform custom workflows, optionally using Spectra utilities.
+1. **Spec-focused tasks:** Scripts that modify the spec itself, using Coda's built-in utilities to ensure the file remains valid.
+2. **User-defined tasks:** Scripts that operate on the data to generate other code, gather information about the app, or perform custom workflows, optionally using Coda utilities.
 
-Spectra lets you define structured specs that LLMs can interpret to run user-defined scripts and CLI commands—modifying specs, generating code, and enforcing coding standards—so your workflows remain deterministic, maintainable, and consistent across your projects.
+Coda lets you define structured specs that LLMs can interpret to run user-defined scripts and CLI commands—modifying specs, generating code, and enforcing coding standards—so your workflows remain deterministic, maintainable, and consistent across your projects.
 
 ## Schema File Structure
 
@@ -147,7 +147,7 @@ Here’s a complete example of a `.spec.json` file that includes all the metadat
   // Version of the spec file format, useful for compatibility and migrations
   "version": "1.0.0",
 
-  // Metadata section used by the Spectra library to track changes, design decisions, and directives for LLM prompt generation
+  // Metadata section used by the Coda library to track changes, design decisions, and directives for LLM prompt generation
   "meta": {
     // Tracks all changes made to the schema file for auditing and LLM context
     "changeLog": [

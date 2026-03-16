@@ -1,13 +1,13 @@
-# Spectra Examples
+# Coda Examples
 
-This directory contains a sample `.spec.json` file to demonstrate Spectra CLI usage.
+This directory contains a sample `.spec.json` file to demonstrate Coda CLI usage.
 
 ## Prerequisites
 
-Install Spectra as a dev dependency:
+Install Coda as a dev dependency:
 
 ```bash
-bun add -d @linttrap/spectra
+bun add -d @linttrap/coda
 ```
 
 ## Walkthrough
@@ -16,7 +16,7 @@ bun add -d @linttrap/spectra
 
 ```bash
 cd examples
-bunx spectra validate my-app.spec.json
+bunx coda validate my-app.spec.json
 ```
 
 Expected output:
@@ -28,7 +28,7 @@ Expected output:
 ### 2. Get info about the spec
 
 ```bash
-bunx spectra info my-app.spec.json
+bunx coda info my-app.spec.json
 ```
 
 This prints a detailed report: name, description, version, directives with step counts, schema type count, data keys, changelog entries, and design decisions.
@@ -36,7 +36,7 @@ This prints a detailed report: name, description, version, directives with step 
 ### 3. Run the doctor
 
 ```bash
-bunx spectra doctor my-app.spec.json
+bunx coda doctor my-app.spec.json
 ```
 
 Reports any errors or warnings in the spec structure.
@@ -44,14 +44,14 @@ Reports any errors or warnings in the spec structure.
 ### 4. Compile prompt files
 
 ```bash
-# First, set up spectra.json config (or ensure it exists)
-bunx spectra setup
+# First, set up coda.json config (or ensure it exists)
+bunx coda setup
 
-# Then compile (uses ide/out from spectra.json)
-bunx spectra compile my-app.spec.json
+# Then compile (uses ide/out from coda.json)
+bunx coda compile my-app.spec.json
 ```
 
-This creates one `.prompt.md` file per directive in the output directory configured in `spectra.json` (default: `.github/prompts/`):
+This creates one `.prompt.md` file per directive in the output directory configured in `coda.json` (default: `.github/prompts/`):
 
 - `my-app.addEntity.prompt.md`
 - `my-app.generateTypes.prompt.md`
@@ -62,7 +62,7 @@ Each file is a complete VS Code Copilot prompt with context, design decisions, c
 ### 5. Create a named spec
 
 ```bash
-bunx spectra create --name "Test App"
+bunx coda create --name "Test App"
 ```
 
 Creates `test-app.spec.json` with the name and id pre-filled.
@@ -70,7 +70,7 @@ Creates `test-app.spec.json` with the name and id pre-filled.
 ### 6. Create a spec from template
 
 ```bash
-bunx spectra init test.spec.json
+bunx coda init test.spec.json
 ```
 
 Creates a minimal `test.spec.json` template ready for editing.

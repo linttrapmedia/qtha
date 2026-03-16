@@ -13,8 +13,8 @@ export type {
   PromptStringStep,
   SchemaData,
   SchemaRef,
-  SchemaTypes,
   SchemaTypeValue,
+  SchemaTypes,
   SnippetStep,
   SpecFile,
   SpecInfo,
@@ -25,7 +25,7 @@ export type {
   ValidationResult,
 } from "./lib/types";
 
-export type { SpectraConfig, ValidateResult } from "./lib/config";
+export type { CodaConfig, ValidateResult } from "./lib/config";
 
 export { configPath, defaultConfig, initConfig, readConfig, updateConfigResults, writeConfig } from "./lib/config";
 
