@@ -1,4 +1,4 @@
-# <♬> Coda
+# <♼> Coda
 
 Coda is a library and convention for defining, maintaining, and using structured data in a way that's optimized for large language models (LLMs). At its core, Coda uses standardized `.coda.json` files that contain both data and metadata—tracking design decisions, changes, and generation instructions.
 
@@ -55,14 +55,17 @@ bunx coda setup
 ## CLI Reference
 
 ```
-coda new --name <name> [file]   Create a named .coda.json file
-coda compile <file|dir>         Compile .prompt.md files from spec directives
-coda info [file|dir]            Report detailed info about spec file(s)
-coda doctor [file|dir]          Diagnose and report issues in spec file(s)
-coda validate <file|dir>        Validate spec(s) against their schemas
-coda setup                      Scaffold coda.json config and agent file
-  --ide <ide>                      IDE target (default: vscode)
-  --out <dir>                      Output directory (default: .github/prompts/)
+coda new --name <name>     Create a named .coda.json file
+coda compile [file|dir]    Compile .prompt.md files from spec(s)
+coda info [file|dir]       Report detailed info about spec file(s)
+coda doctor [file|dir]     Diagnose and report issues in spec file(s)
+coda validate [file|dir]   Validate spec(s) against their schemas
+coda clean                 Remove agent files and clear config results
+coda pkg --list            List available packages
+coda pkg --install <name>  Install a package to current directory
+coda setup                 Scaffold coda.json config and agent file
+  --ide <ide>              IDE target (default: vscode)
+  --out <dir>              Output directory (default: .github/prompts/)
 ```
 
 ## Library API
