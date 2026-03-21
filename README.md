@@ -1,31 +1,31 @@
-# <♼> Coda
+# <♼> Qtha
 
-Coda is a library and convention for defining, maintaining, and using structured data in a way that's optimized for large language models (LLMs). At its core, Coda uses standardized `.coda.json` files that contain both data and metadata—tracking design decisions, changes, and generation instructions.
+Qtha is a library and convention for defining, maintaining, and using structured data in a way that's optimized for large language models (LLMs). At its core, Qtha uses standardized `.qtha.json` files that contain both data and metadata—tracking design decisions, changes, and generation instructions.
 
 ## Requirements
 
-Coda requires [Bun](https://bun.sh) — it runs TypeScript directly with no build step.
+Qtha requires [Bun](https://bun.sh) — it runs TypeScript directly with no build step.
 
 ## Installation
 
 ### Quick Start (no install)
 
 ```bash
-bunx @linttrap/coda --help
+bunx @linttrap/qtha --help
 ```
 
 ### Add to a project
 
 ```bash
-bun add -d @linttrap/coda
-bunx coda --help
+bun add -d @linttrap/qtha
+bunx qtha --help
 ```
 
 ### Contributing
 
 ```bash
-git clone https://github.com/linttrapmedia/coda.git
-cd coda
+git clone https://github.com/linttrapmedia/qtha.git
+cd qtha
 bun install
 bun link
 ```
@@ -34,43 +34,43 @@ bun link
 
 ```bash
 # Create a named spec file
-bunx coda new --name "spec-name"
+bunx qtha new --name "spec-name"
 
 # Validate it
-bunx coda validate [file|dir]
+bunx qtha validate [file|dir]
 
-# Compile directives into VS Code Copilot .prompt.md files (uses ide/out from coda.json)
-bunx coda compile [file|dir]
+# Compile directives into VS Code Copilot .prompt.md files (uses ide/out from qtha.json)
+bunx qtha compile [file|dir]
 
 # Get detailed info about a spec
-bunx coda info [file|dir]
+bunx qtha info [file|dir]
 
 # Diagnose issues
-bunx coda doctor [file|dir]
+bunx qtha doctor [file|dir]
 
-# Scaffold coda.json config and agent file
-bunx coda setup
+# Scaffold qtha.json config and agent file
+bunx qtha setup
 ```
 
 ## CLI Reference
 
 ```
-coda new --name <name>     Create a named .coda.json file
-coda compile [file|dir]    Compile .prompt.md files from spec(s)
-coda info [file|dir]       Report detailed info about spec file(s)
-coda doctor [file|dir]     Diagnose and report issues in spec file(s)
-coda validate [file|dir]   Validate spec(s) against their schemas
-coda clean                 Remove agent files and clear config results
-coda pkg --list            List available packages
-coda pkg --install <name>  Install a package to current directory
-coda setup                 Scaffold coda.json config and agent file
+qtha new --name <name>     Create a named .qtha.json file
+qtha compile [file|dir]    Compile .prompt.md files from spec(s)
+qtha info [file|dir]       Report detailed info about spec file(s)
+qtha doctor [file|dir]     Diagnose and report issues in spec file(s)
+qtha validate [file|dir]   Validate spec(s) against their schemas
+qtha clean                 Remove agent files and clear config results
+qtha pkg --list            List available packages
+qtha pkg --install <name>  Install a package to current directory
+qtha setup                 Scaffold qtha.json config and agent file
   --ide <ide>              IDE target (default: vscode)
   --out <dir>              Output directory (default: .github/prompts/)
 ```
 
 ## Library API
 
-Use Coda programmatically in your own scripts:
+Use Qtha programmatically in your own scripts:
 
 ```typescript
 import {
@@ -89,10 +89,10 @@ import {
   validateSpec,
   getSpecInfo,
   diagnoseSpec,
-} from "@linttrap/coda";
+} from "@linttrap/qtha";
 
 // Read a spec
-const spec = await readSpec("my-app.coda.json");
+const spec = await readSpec("my-app.qtha.json");
 
 // Validate it
 const result = validateSpec(spec);
@@ -101,30 +101,30 @@ if (!result.valid) {
 }
 
 // Compile all directives to .prompt.md files
-const files = await compilePromptFiles("my-app.coda.json", ".github/prompts");
+const files = await compilePromptFiles("my-app.qtha.json", ".github/prompts");
 
 // Get spec info
-const info = await getSpecInfo("my-app.coda.json");
+const info = await getSpecInfo("my-app.qtha.json");
 
 // Run diagnostics
-const diagnosis = await diagnoseSpec("my-app.coda.json");
+const diagnosis = await diagnoseSpec("my-app.qtha.json");
 ```
 
 ---
 
-The Coda command-line utility scans your codebase for `.coda.json` files, reads their metadata, and generates LLM prompts that include **directives**: scripted instructions for automated tasks. These directives fall into two categories:
+The Qtha command-line utility scans your codebase for `.qtha.json` files, reads their metadata, and generates LLM prompts that include **directives**: scripted instructions for automated tasks. These directives fall into two categories:
 
-1. **Spec-focused tasks:** Scripts that modify the spec itself, using Coda's built-in utilities to ensure the file remains valid.
-2. **User-defined tasks:** Scripts that operate on the data to generate other code, gather information about the app, or perform custom workflows, optionally using Coda utilities.
+1. **Spec-focused tasks:** Scripts that modify the spec itself, using Qtha's built-in utilities to ensure the file remains valid.
+2. **User-defined tasks:** Scripts that operate on the data to generate other code, gather information about the app, or perform custom workflows, optionally using Qtha utilities.
 
-Coda lets you define structured specs that LLMs can interpret to run user-defined scripts and CLI commands—modifying specs, generating code, and enforcing coding standards—so your workflows remain deterministic, maintainable, and consistent across your projects.
+Qtha lets you define structured specs that LLMs can interpret to run user-defined scripts and CLI commands—modifying specs, generating code, and enforcing coding standards—so your workflows remain deterministic, maintainable, and consistent across your projects.
 
 ## Schema File Structure
 
-Here's a breakdown of the structure of a `.coda.json` file, which combines metadata for LLM context and directives with the actual data used by your application:
+Here's a breakdown of the structure of a `.qtha.json` file, which combines metadata for LLM context and directives with the actual data used by your application:
 
 ```bash
-.coda.json
+.qtha.json
 ├─ ref, id, name, description, version   # Metadata for the spec itself
 ├─ meta
 │  ├─ changeLog       # Tracks changes over time
@@ -136,7 +136,7 @@ Here's a breakdown of the structure of a `.coda.json` file, which combines metad
 
 ## Full Schema File Example
 
-Here's a complete example of a `.coda.json` file that includes all the metadata and directives for LLM-powered automation:
+Here's a complete example of a `.qtha.json` file that includes all the metadata and directives for LLM-powered automation:
 
 ```json
 {
@@ -150,7 +150,7 @@ Here's a complete example of a `.coda.json` file that includes all the metadata 
   // Version of the spec file format, useful for compatibility and migrations
   "version": "1.0.0",
 
-  // Metadata section used by the Coda library to track changes, design decisions, and directives for LLM prompt generation
+  // Metadata section used by the Qtha library to track changes, design decisions, and directives for LLM prompt generation
   "meta": {
     // Tracks all changes made to the schema file for auditing and LLM context
     "changeLog": [

@@ -3,7 +3,7 @@ import { mkdtemp, readdir, rm } from "fs/promises";
 import { tmpdir } from "os";
 import { join, resolve } from "path";
 import type { SpecFile } from "../src/index";
-import type { CodaConfig } from "../src/lib/config";
+import type { QthaConfig } from "../src/lib/config";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -12,14 +12,14 @@ const CLI = resolve(import.meta.dir, "../src/cli.ts");
 let tmpDir: string;
 
 beforeEach(async () => {
-  tmpDir = await mkdtemp(join(tmpdir(), "coda-cli-test-"));
+  tmpDir = await mkdtemp(join(tmpdir(), "qtha-cli-test-"));
 });
 
 afterEach(async () => {
   await rm(tmpDir, { recursive: true, force: true });
 });
 
-function specPath(name = "test.coda.json"): string {
+function specPath(name = "test.qtha.json"): string {
   return join(tmpDir, name);
 }
 
@@ -61,7 +61,7 @@ function makeValidSpec(overrides?: Partial<SpecFile>): SpecFile {
   };
 }
 
-function makeConfig(overrides?: Partial<CodaConfig>): CodaConfig {
+function makeConfig(overrides?: Partial<QthaConfig>): QthaConfig {
   return {
     ide: "vscode",
     out: ".github/prompts",
@@ -70,24 +70,24 @@ function makeConfig(overrides?: Partial<CodaConfig>): CodaConfig {
   };
 }
 
-// ─── coda new ─────────────────────────────────────────────────────────────
+// ─── qtha new ─────────────────────────────────────────────────────────────
 
-describe("coda new", () => {
+describe("qtha new", () => {
   test("creates a named spec file", async () => {
     const result = run(["new", "--name", "My App"]);
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("Created my-app.coda.json");
+    expect(result.stdout).toContain("Created my-app.qtha.json");
 
-    const spec = await readJson(join(tmpDir, "my-app.coda.json"));
+    const spec = await readJson(join(tmpDir, "my-app.qtha.json"));
     expect(spec.name).toBe("My App");
     expect(spec.id).toBe("my-app");
   });
 
   test("creates a spec with a custom output filename", async () => {
-    const result = run(["new", "--name", "Widget", "widget.coda.json"]);
+    const result = run(["new", "--name", "Widget", "widget.qtha.json"]);
     expect(result.exitCode).toBe(0);
 
-    const spec = await readJson(join(tmpDir, "widget.coda.json"));
+    const spec = await readJson(join(tmpDir, "widget.qtha.json"));
     expect(spec.name).toBe("Widget");
   });
 
@@ -98,16 +98,16 @@ describe("coda new", () => {
   });
 
   test("refuses to overwrite an existing file", async () => {
-    await writeJson(join(tmpDir, "my-app.coda.json"), {});
+    await writeJson(join(tmpDir, "my-app.qtha.json"), {});
     const result = run(["new", "--name", "My App"]);
     expect(result.exitCode).not.toBe(0);
     expect(result.stderr).toContain("already exists");
   });
 });
 
-// ─── coda validate ────────────────────────────────────────────────────────
+// ─── qtha validate ────────────────────────────────────────────────────────
 
-describe("coda validate", () => {
+describe("qtha validate", () => {
   test("passes for a valid spec file", async () => {
     const p = specPath();
     await writeJson(p, makeValidSpec());
@@ -131,8 +131,8 @@ describe("coda validate", () => {
   });
 
   test("validates all specs in a directory", async () => {
-    await writeJson(join(tmpDir, "a.coda.json"), makeValidSpec({ id: "a", name: "A" }));
-    await writeJson(join(tmpDir, "b.coda.json"), makeValidSpec({ id: "b", name: "B" }));
+    await writeJson(join(tmpDir, "a.qtha.json"), makeValidSpec({ id: "a", name: "A" }));
+    await writeJson(join(tmpDir, "b.qtha.json"), makeValidSpec({ id: "b", name: "B" }));
 
     const result = run(["validate", tmpDir]);
     expect(result.exitCode).toBe(0);
@@ -151,22 +151,22 @@ describe("coda validate", () => {
   });
 
   test("defaults to current directory with no arguments", async () => {
-    await writeJson(join(tmpDir, "x.coda.json"), makeValidSpec({ id: "x", name: "X" }));
+    await writeJson(join(tmpDir, "x.qtha.json"), makeValidSpec({ id: "x", name: "X" }));
     const result = run(["validate"]);
     expect(result.exitCode).toBe(0);
   });
 
   test("validates the example spec", async () => {
-    const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.coda.json");
+    const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.qtha.json");
     const result = run(["validate", examplePath]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("✓");
   });
 });
 
-// ─── coda doctor ──────────────────────────────────────────────────────────
+// ─── qtha doctor ──────────────────────────────────────────────────────────
 
-describe("coda doctor", () => {
+describe("qtha doctor", () => {
   test("reports ok for a well-formed spec", async () => {
     const spec = makeValidSpec();
     spec.meta.directives = {
@@ -238,24 +238,24 @@ describe("coda doctor", () => {
   });
 
   test("diagnoses the example spec without errors", async () => {
-    const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.coda.json");
+    const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.qtha.json");
     const result = run(["doctor", examplePath]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("0 error(s)");
   });
 
   test("scans a directory for specs to diagnose", async () => {
-    await writeJson(join(tmpDir, "a.coda.json"), makeValidSpec({ id: "a", name: "A" }));
-    await writeJson(join(tmpDir, "b.coda.json"), makeValidSpec({ id: "b", name: "B" }));
+    await writeJson(join(tmpDir, "a.qtha.json"), makeValidSpec({ id: "a", name: "A" }));
+    await writeJson(join(tmpDir, "b.qtha.json"), makeValidSpec({ id: "b", name: "B" }));
 
     const result = run(["doctor", tmpDir]);
     expect(result.stdout).toContain("2 spec(s) checked");
   });
 });
 
-// ─── coda info ────────────────────────────────────────────────────────────
+// ─── qtha info ────────────────────────────────────────────────────────────
 
-describe("coda info", () => {
+describe("qtha info", () => {
   test("shows spec info for a file", async () => {
     const spec = makeValidSpec();
     spec.meta.schema.types = { Role: ["admin", "user"] };
@@ -282,8 +282,8 @@ describe("coda info", () => {
   });
 
   test("handles directory with multiple specs", async () => {
-    await writeJson(join(tmpDir, "a.coda.json"), makeValidSpec({ id: "a", name: "App A" }));
-    await writeJson(join(tmpDir, "b.coda.json"), makeValidSpec({ id: "b", name: "App B" }));
+    await writeJson(join(tmpDir, "a.qtha.json"), makeValidSpec({ id: "a", name: "App A" }));
+    await writeJson(join(tmpDir, "b.qtha.json"), makeValidSpec({ id: "b", name: "App B" }));
 
     const result = run(["info", tmpDir]);
     expect(result.exitCode).toBe(0);
@@ -292,20 +292,20 @@ describe("coda info", () => {
   });
 });
 
-// ─── coda compile ─────────────────────────────────────────────────────────
+// ─── qtha compile ─────────────────────────────────────────────────────────
 
-describe("coda compile", () => {
+describe("qtha compile", () => {
   test("compiles prompt files from a spec", async () => {
     const spec = makeValidSpec({ id: "app", name: "App" });
     spec.meta.directives = {
       setup: { description: "Setup", steps: [{ type: "text", description: "Go" }] },
       build: { description: "Build", steps: [{ type: "text", description: "Build it" }] },
     };
-    const p = specPath("app.coda.json");
+    const p = specPath("app.qtha.json");
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
     const result = run(["compile", p]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("2 prompt file(s) compiled");
@@ -334,11 +334,11 @@ describe("coda compile", () => {
         steps: [{ type: "promptString", id: "name", description: "Your name" }],
       },
     };
-    const p = specPath("tool-app.coda.json");
+    const p = specPath("tool-app.qtha.json");
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
     run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "tool-app.setup.prompt.md")).text();
@@ -359,11 +359,11 @@ describe("coda compile", () => {
         ],
       },
     };
-    const p = specPath("allsteps.coda.json");
+    const p = specPath("allsteps.qtha.json");
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
     run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "allsteps.all.prompt.md")).text();
@@ -385,11 +385,11 @@ describe("coda compile", () => {
     spec.meta.directives = {
       run: { description: "Run", steps: [{ type: "text", description: "Go" }] },
     };
-    const p = specPath("design.coda.json");
+    const p = specPath("design.qtha.json");
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
     run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "design.run.prompt.md")).text();
@@ -412,11 +412,11 @@ describe("coda compile", () => {
     spec.meta.directives = {
       run: { description: "Run", steps: [{ type: "text", description: "Go" }] },
     };
-    const p = specPath("changelog.coda.json");
+    const p = specPath("changelog.qtha.json");
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
     run(["compile", p]);
 
     const content = await Bun.file(join(outDir, "changelog.run.prompt.md")).text();
@@ -425,7 +425,7 @@ describe("coda compile", () => {
   });
 
   test("compiles all specs in a directory", async () => {
-    await writeJson(join(tmpDir, "a.coda.json"), {
+    await writeJson(join(tmpDir, "a.qtha.json"), {
       ...makeValidSpec({ id: "a", name: "A" }),
       meta: {
         changeLog: [],
@@ -434,7 +434,7 @@ describe("coda compile", () => {
         schema: { types: {}, data: {} },
       },
     });
-    await writeJson(join(tmpDir, "b.coda.json"), {
+    await writeJson(join(tmpDir, "b.qtha.json"), {
       ...makeValidSpec({ id: "b", name: "B" }),
       meta: {
         changeLog: [],
@@ -445,7 +445,7 @@ describe("coda compile", () => {
     });
 
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
     const result = run(["compile", tmpDir]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("2 prompt file(s) compiled");
@@ -461,11 +461,11 @@ describe("coda compile", () => {
     spec.meta.directives = {
       init: { description: "Init", steps: [{ type: "text", description: "Start" }] },
     };
-    const p = specPath("nested.coda.json");
+    const p = specPath("nested.qtha.json");
     await writeJson(p, spec);
 
     const outDir = join(tmpDir, "deep", "nested", "output");
-    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
     const result = run(["compile", p]);
     expect(result.exitCode).toBe(0);
 
@@ -474,15 +474,15 @@ describe("coda compile", () => {
   });
 
   test("defaults to current directory with no arguments", async () => {
-    await writeJson(join(tmpDir, "x.coda.json"), makeValidSpec({ id: "x", name: "X" }));
+    await writeJson(join(tmpDir, "x.qtha.json"), makeValidSpec({ id: "x", name: "X" }));
     const result = run(["compile"]);
     expect(result.exitCode).toBe(0);
   });
 
   test("compiles the example spec", async () => {
-    const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.coda.json");
+    const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.qtha.json");
     const outDir = join(tmpDir, "compiled");
-    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
     const result = run(["compile", examplePath]);
     expect(result.exitCode).toBe(0);
 
@@ -496,19 +496,19 @@ describe("coda compile", () => {
   });
 });
 
-// ─── coda setup ───────────────────────────────────────────────────────────
+// ─── qtha setup ───────────────────────────────────────────────────────────
 
-describe("coda setup", () => {
+describe("qtha setup", () => {
   test("scaffolds agent file and config", async () => {
     const result = run(["setup"]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Created");
 
-    const agentPath = join(tmpDir, ".github", "agents", "coda.agent.md");
+    const agentPath = join(tmpDir, ".github", "agents", "qtha.agent.md");
     const content = await Bun.file(agentPath).text();
     expect(content.length).toBeGreaterThan(0);
 
-    const config = await readJson(join(tmpDir, "coda.json"));
+    const config = await readJson(join(tmpDir, "qtha.json"));
     expect(config.ide).toBe("vscode");
     expect(config.out).toBe(".github/prompts");
   });
@@ -521,13 +521,13 @@ describe("coda setup", () => {
   });
 });
 
-// ─── coda --help / --version ──────────────────────────────────────────────
+// ─── qtha --help / --version ──────────────────────────────────────────────
 
-describe("coda help and version", () => {
+describe("qtha help and version", () => {
   test("--help shows usage", () => {
     const result = run(["--help"]);
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain("coda");
+    expect(result.stdout).toContain("qtha");
     expect(result.stdout).toContain("compile");
     expect(result.stdout).toContain("validate");
   });
@@ -548,7 +548,7 @@ describe("end-to-end CLI workflow", () => {
     let result = run(["new", "--name", "Workflow App"]);
     expect(result.exitCode).toBe(0);
 
-    const p = join(tmpDir, "workflow-app.coda.json");
+    const p = join(tmpDir, "workflow-app.qtha.json");
     const spec = await readJson(p);
 
     // 2. Manually enrich the spec with schema, data, directives, changelog, design
@@ -602,7 +602,7 @@ describe("end-to-end CLI workflow", () => {
 
     // 6. Compile
     const outDir = join(tmpDir, "prompts");
-    await writeJson(join(tmpDir, "coda.json"), makeConfig({ out: outDir }));
+    await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
     result = run(["compile", p]);
     expect(result.exitCode).toBe(0);
 

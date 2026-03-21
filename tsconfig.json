@@ -14,7 +14,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "paths": {
-      "@coda/*": ["./src/*"]
+      "@qtha/*": ["./src/*"]
     },
     "types": ["bun-types"]
   },

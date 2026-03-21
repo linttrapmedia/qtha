@@ -1,10 +1,10 @@
 {
-  "name": "@linttrap/coda",
+  "name": "@linttrap/qtha",
   "version": "0.1.0",
   "type": "module",
-  "description": "CLI and library for managing .coda.json files — structured data optimized for LLMs",
+  "description": "CLI and library for managing .qtha.json files — structured data optimized for LLMs",
   "bin": {
-    "coda": "./src/cli.ts"
+    "qtha": "./src/cli.ts"
   },
   "exports": {
     ".": "./src/index.ts"
@@ -13,10 +13,10 @@
   "types": "./src/index.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "bun run tests/coda.test.ts"
+    "test": "bun run tests/qtha.test.ts"
   },
   "keywords": [
-    "coda",
+    "qtha",
     "spec",
     "llm",
     "cli",

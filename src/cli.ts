@@ -11,15 +11,15 @@ import { validateCommand } from "./commands/validate";
 import { bold, cyan, dim, LOGO } from "./lib/color";
 
 const COMMANDS: [string, string][] = [
-  ["coda new --name <name>", "Create a named .coda.json file"],
-  ["coda compile [file|dir]", "Compile .prompt.md files from spec(s)"],
-  ["coda info [file|dir]", "Report detailed info about spec file(s)"],
-  ["coda doctor [file|dir]", "Diagnose and report issues in spec file(s)"],
-  ["coda validate [file|dir]", "Validate spec(s) against their schemas"],
-  ["coda clean", "Remove agent files and clear config results"],
-  ["coda pkg --list", "List available packages"],
-  ["coda pkg --install <name>", "Install a package to current directory"],
-  ["coda setup", "Scaffold coda.json config and agent file"],
+  ["qtha new --name <name>", "Create a named .qtha.json file"],
+  ["qtha compile [file|dir]", "Compile .prompt.md files from spec(s)"],
+  ["qtha info [file|dir]", "Report detailed info about spec file(s)"],
+  ["qtha doctor [file|dir]", "Diagnose and report issues in spec file(s)"],
+  ["qtha validate [file|dir]", "Validate spec(s) against their schemas"],
+  ["qtha clean", "Remove agent files and clear config results"],
+  ["qtha pkg --list", "List available packages"],
+  ["qtha pkg --install <name>", "Install a package to current directory"],
+  ["qtha setup", "Scaffold qtha.json config and agent file"],
   ["  --ide <ide>", "IDE target (default: vscode)"],
   ["  --out <dir>", "Output directory (default: .github/prompts/)"],
 ];
@@ -35,7 +35,7 @@ function formatTable(rows: [string, string][], colorCmd: (s: string) => string):
 }
 
 const USAGE = `
-${bold(cyan(`${LOGO} Coda`))} ${dim("— CLI for managing .coda.json files")}
+${bold(cyan(`${LOGO} Qtha`))} ${dim("— CLI for managing .qtha.json files")}
 
 ${bold("Usage:")}
 ${formatTable(COMMANDS, cyan)}

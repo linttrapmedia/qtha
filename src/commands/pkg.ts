@@ -58,6 +58,6 @@ export async function pkgCommand(_positional: string[], flags: Record<string, st
   }
 
   console.log(`${cyan(LOGO)} ${bold("pkg")}\n`);
-  console.log(`  ${cyan("coda pkg")} --list               List available packages`);
-  console.log(`  ${cyan("coda pkg")} --install <name>      Install a package to current directory`);
+  console.log(`  ${cyan("qtha pkg")} --list               List available packages`);
+  console.log(`  ${cyan("qtha pkg")} --install <name>      Install a package to current directory`);
 }

@@ -1,13 +1,13 @@
-# Coda Examples
+# Qtha Examples
 
-This directory contains a sample `.coda.json` file to demonstrate Coda CLI usage.
+This directory contains a sample `.qtha.json` file to demonstrate Qtha CLI usage.
 
 ## Prerequisites
 
-Install Coda as a dev dependency:
+Install Qtha as a dev dependency:
 
 ```bash
-bun add -d @linttrap/coda
+bun add -d @linttrap/qtha
 ```
 
 ## Walkthrough
@@ -16,19 +16,19 @@ bun add -d @linttrap/coda
 
 ```bash
 cd examples
-bunx coda validate my-app.coda.json
+bunx qtha validate my-app.qtha.json
 ```
 
 Expected output:
 
 ```
-✓ /path/to/examples/my-app.coda.json
+✓ /path/to/examples/my-app.qtha.json
 ```
 
 ### 2. Get info about the spec
 
 ```bash
-bunx coda info my-app.coda.json
+bunx qtha info my-app.qtha.json
 ```
 
 This prints a detailed report: name, description, version, directives with step counts, schema type count, data keys, changelog entries, and design decisions.
@@ -36,7 +36,7 @@ This prints a detailed report: name, description, version, directives with step 
 ### 3. Run the doctor
 
 ```bash
-bunx coda doctor my-app.coda.json
+bunx qtha doctor my-app.qtha.json
 ```
 
 Reports any errors or warnings in the spec structure.
@@ -44,14 +44,14 @@ Reports any errors or warnings in the spec structure.
 ### 4. Compile prompt files
 
 ```bash
-# First, set up coda.json config (or ensure it exists)
-bunx coda setup
+# First, set up qtha.json config (or ensure it exists)
+bunx qtha setup
 
-# Then compile (uses ide/out from coda.json)
-bunx coda compile my-app.coda.json
+# Then compile (uses ide/out from qtha.json)
+bunx qtha compile my-app.qtha.json
 ```
 
-This creates one `.prompt.md` file per directive in the output directory configured in `coda.json` (default: `.github/prompts/`):
+This creates one `.prompt.md` file per directive in the output directory configured in `qtha.json` (default: `.github/prompts/`):
 
 - `my-app.addEntity.prompt.md`
 - `my-app.generateTypes.prompt.md`
@@ -62,15 +62,15 @@ Each file is a complete VS Code Copilot prompt with context, design decisions, c
 ### 5. Create a named spec
 
 ```bash
-bunx coda create --name "Test App"
+bunx qtha create --name "Test App"
 ```
 
-Creates `test-app.coda.json` with the name and id pre-filled.
+Creates `test-app.qtha.json` with the name and id pre-filled.
 
 ### 6. Create a spec from template
 
 ```bash
-bunx coda init test.coda.json
+bunx qtha init test.qtha.json
 ```
 
-Creates a minimal `test.coda.json` template ready for editing.
+Creates a minimal `test.qtha.json` template ready for editing.

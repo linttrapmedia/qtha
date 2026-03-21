@@ -25,7 +25,7 @@ export type {
   ValidationResult,
 } from "./lib/types";
 
-export type { CodaConfig, ValidateResult } from "./lib/config";
+export type { QthaConfig, ValidateResult } from "./lib/config";
 
 export { configPath, defaultConfig, initConfig, readConfig, updateConfigResults, writeConfig } from "./lib/config";
 

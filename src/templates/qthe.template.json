@@ -2,7 +2,7 @@
   "ref": "git",
   "id": "my-spec",
   "name": "My Spec",
-  "description": "A new Coda spec file",
+  "description": "A new Qtha spec file",
   "version": "1.0.0",
   "meta": {
     "changeLog": [

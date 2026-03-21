@@ -90,7 +90,7 @@
           {
             "type": "snippet",
             "fence": "bash",
-            "snippet": "bun scripts/generateTypes.ts --spec my-app.coda.json --out ${input:outputPath}",
+            "snippet": "bun scripts/generateTypes.ts --spec my-app.qtha.json --out ${input:outputPath}",
             "description": "Run the type generation script"
           }
         ]
