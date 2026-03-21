@@ -4,7 +4,7 @@ import { bold, cyan, dim, green, LOGO } from "../lib/color";
 import { readConfig } from "../lib/config";
 import { compilePromptFiles } from "../lib/prompt";
 
-export async function compileCommand(positional: string[], flags: Record<string, string | boolean>) {
+export async function buildCommand(positional: string[], flags: Record<string, string | boolean>) {
   const target = positional[0] ?? ".";
 
   const config = await readConfig();
@@ -34,7 +34,7 @@ export async function compileCommand(positional: string[], flags: Record<string,
     specFiles = [targetPath];
   }
 
-  console.log(`${cyan(LOGO)} ${bold("compile")}\n`);
+  console.log(`${cyan(LOGO)} ${bold("build")}\n`);
   let totalCompiled = 0;
   for (const specPath of specFiles) {
     const written = await compilePromptFiles(specPath, outputDir, ide as "vscode");

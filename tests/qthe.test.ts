@@ -105,14 +105,14 @@ describe("qtha new", () => {
   });
 });
 
-// ─── qtha validate ────────────────────────────────────────────────────────
+// ─── qtha check (validate + doctor) ───────────────────────────────────────
 
-describe("qtha validate", () => {
+describe("qtha check", () => {
   test("passes for a valid spec file", async () => {
     const p = specPath();
     await writeJson(p, makeValidSpec());
 
-    const result = run(["validate", p]);
+    const result = run(["check", p]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("✓");
   });
@@ -125,7 +125,7 @@ describe("qtha validate", () => {
       data: {},
     });
 
-    const result = run(["validate", p]);
+    const result = run(["check", p]);
     expect(result.exitCode).not.toBe(0);
     expect(result.stdout).toContain("✗");
   });
@@ -134,7 +134,7 @@ describe("qtha validate", () => {
     await writeJson(join(tmpDir, "a.qtha.json"), makeValidSpec({ id: "a", name: "A" }));
     await writeJson(join(tmpDir, "b.qtha.json"), makeValidSpec({ id: "b", name: "B" }));
 
-    const result = run(["validate", tmpDir]);
+    const result = run(["check", tmpDir]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("✓");
   });
@@ -145,29 +145,25 @@ describe("qtha validate", () => {
     const p = specPath();
     await writeJson(p, spec);
 
-    const result = run(["validate", p]);
+    const result = run(["check", p]);
     expect(result.exitCode).not.toBe(0);
     expect(result.stdout).toContain("✗");
   });
 
   test("defaults to current directory with no arguments", async () => {
     await writeJson(join(tmpDir, "x.qtha.json"), makeValidSpec({ id: "x", name: "X" }));
-    const result = run(["validate"]);
+    const result = run(["check"]);
     expect(result.exitCode).toBe(0);
   });
 
-  test("validates the example spec", async () => {
+  test("checks the example spec", async () => {
     const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.qtha.json");
-    const result = run(["validate", examplePath]);
+    const result = run(["check", examplePath]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("✓");
   });
-});
 
-// ─── qtha doctor ──────────────────────────────────────────────────────────
-
-describe("qtha doctor", () => {
-  test("reports ok for a well-formed spec", async () => {
+  test("reports ok for a well-formed spec (doctor)", async () => {
     const spec = makeValidSpec();
     spec.meta.directives = {
       run: { description: "Run", steps: [{ type: "text", description: "Do it" }] },
@@ -184,7 +180,7 @@ describe("qtha doctor", () => {
     const p = specPath();
     await writeJson(p, spec);
 
-    const result = run(["doctor", p]);
+    const result = run(["check", p]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("✓");
     expect(result.stdout).toContain("0 error(s)");
@@ -194,16 +190,16 @@ describe("qtha doctor", () => {
     const p = specPath();
     await Bun.write(p, "{ bad json }");
 
-    const result = run(["doctor", p]);
+    const result = run(["check", p]);
     expect(result.exitCode).not.toBe(0);
     expect(result.stdout).toContain("ERROR");
   });
 
-  test("reports errors for missing required fields", async () => {
+  test("reports errors for missing required fields (doctor)", async () => {
     const p = specPath();
     await writeJson(p, { meta: { schema: {}, directives: {}, changeLog: [], design: [] }, data: {} });
 
-    const result = run(["doctor", p]);
+    const result = run(["check", p]);
     expect(result.exitCode).not.toBe(0);
   });
 
@@ -211,7 +207,7 @@ describe("qtha doctor", () => {
     const p = specPath();
     await writeJson(p, makeValidSpec());
 
-    const result = run(["doctor", p]);
+    const result = run(["check", p]);
     expect(result.stdout).toContain("WARNING");
   });
 
@@ -221,7 +217,7 @@ describe("qtha doctor", () => {
     const p = specPath();
     await writeJson(p, spec);
 
-    const result = run(["doctor", p]);
+    const result = run(["check", p]);
     expect(result.exitCode).not.toBe(0);
     expect(result.stdout).toContain("varchar");
   });
@@ -232,23 +228,23 @@ describe("qtha doctor", () => {
     const p = specPath();
     await writeJson(p, spec);
 
-    const result = run(["doctor", p]);
+    const result = run(["check", p]);
     expect(result.exitCode).not.toBe(0);
     expect(result.stdout).toContain("undefined type");
   });
 
   test("diagnoses the example spec without errors", async () => {
     const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.qtha.json");
-    const result = run(["doctor", examplePath]);
+    const result = run(["check", examplePath]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("0 error(s)");
   });
 
-  test("scans a directory for specs to diagnose", async () => {
+  test("scans a directory for specs to check", async () => {
     await writeJson(join(tmpDir, "a.qtha.json"), makeValidSpec({ id: "a", name: "A" }));
     await writeJson(join(tmpDir, "b.qtha.json"), makeValidSpec({ id: "b", name: "B" }));
 
-    const result = run(["doctor", tmpDir]);
+    const result = run(["check", tmpDir]);
     expect(result.stdout).toContain("2 spec(s) checked");
   });
 });
@@ -292,9 +288,9 @@ describe("qtha info", () => {
   });
 });
 
-// ─── qtha compile ─────────────────────────────────────────────────────────
+// ─── qtha build ───────────────────────────────────────────────────────────
 
-describe("qtha compile", () => {
+describe("qtha build", () => {
   test("compiles prompt files from a spec", async () => {
     const spec = makeValidSpec({ id: "app", name: "App" });
     spec.meta.directives = {
@@ -306,7 +302,7 @@ describe("qtha compile", () => {
 
     const outDir = join(tmpDir, "prompts");
     await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
-    const result = run(["compile", p]);
+    const result = run(["build", p]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("2 prompt file(s) compiled");
 
@@ -339,7 +335,7 @@ describe("qtha compile", () => {
 
     const outDir = join(tmpDir, "prompts");
     await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
-    run(["compile", p]);
+    run(["build", p]);
 
     const content = await Bun.file(join(outDir, "tool-app.setup.prompt.md")).text();
     expect(content).not.toContain("mode: agent");
@@ -364,7 +360,7 @@ describe("qtha compile", () => {
 
     const outDir = join(tmpDir, "prompts");
     await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
-    run(["compile", p]);
+    run(["build", p]);
 
     const content = await Bun.file(join(outDir, "allsteps.all.prompt.md")).text();
     expect(content).toContain("1. Plain text step");
@@ -390,7 +386,7 @@ describe("qtha compile", () => {
 
     const outDir = join(tmpDir, "prompts");
     await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
-    run(["compile", p]);
+    run(["build", p]);
 
     const content = await Bun.file(join(outDir, "design.run.prompt.md")).text();
     expect(content).toContain("## Design Decisions");
@@ -417,7 +413,7 @@ describe("qtha compile", () => {
 
     const outDir = join(tmpDir, "prompts");
     await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
-    run(["compile", p]);
+    run(["build", p]);
 
     const content = await Bun.file(join(outDir, "changelog.run.prompt.md")).text();
     expect(content).toContain("## Recent Changes");
@@ -446,7 +442,7 @@ describe("qtha compile", () => {
 
     const outDir = join(tmpDir, "prompts");
     await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
-    const result = run(["compile", tmpDir]);
+    const result = run(["build", tmpDir]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("2 prompt file(s) compiled");
 
@@ -466,7 +462,7 @@ describe("qtha compile", () => {
 
     const outDir = join(tmpDir, "deep", "nested", "output");
     await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
-    const result = run(["compile", p]);
+    const result = run(["build", p]);
     expect(result.exitCode).toBe(0);
 
     const files = await readdir(outDir);
@@ -475,7 +471,7 @@ describe("qtha compile", () => {
 
   test("defaults to current directory with no arguments", async () => {
     await writeJson(join(tmpDir, "x.qtha.json"), makeValidSpec({ id: "x", name: "X" }));
-    const result = run(["compile"]);
+    const result = run(["build"]);
     expect(result.exitCode).toBe(0);
   });
 
@@ -483,7 +479,7 @@ describe("qtha compile", () => {
     const examplePath = resolve(import.meta.dir, "../pkg/example/my-app.qtha.json");
     const outDir = join(tmpDir, "compiled");
     await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
-    const result = run(["compile", examplePath]);
+    const result = run(["build", examplePath]);
     expect(result.exitCode).toBe(0);
 
     const files = await readdir(outDir);
@@ -496,11 +492,11 @@ describe("qtha compile", () => {
   });
 });
 
-// ─── qtha setup ───────────────────────────────────────────────────────────
+// ─── qtha config ──────────────────────────────────────────────────────────
 
-describe("qtha setup", () => {
+describe("qtha config", () => {
   test("scaffolds agent file and config", async () => {
-    const result = run(["setup"]);
+    const result = run(["config"]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Created");
 
@@ -513,9 +509,18 @@ describe("qtha setup", () => {
     expect(config.out).toBe(".github/prompts");
   });
 
+  test("accepts --kwargs for config overrides", async () => {
+    const result = run(["config", "--kwargs", "ide=cursor,out=.cursor/prompts"]);
+    expect(result.exitCode).toBe(0);
+
+    const config = await readJson(join(tmpDir, "qtha.json"));
+    expect(config.ide).toBe("cursor");
+    expect(config.out).toBe(".cursor/prompts");
+  });
+
   test("does not overwrite existing agent file or config", async () => {
-    run(["setup"]);
-    const result = run(["setup"]);
+    run(["config"]);
+    const result = run(["config"]);
     expect(result.stdout + result.stderr).toContain("Already exists");
     expect(result.stdout + result.stderr).toContain("Config already exists");
   });
@@ -528,8 +533,8 @@ describe("qtha help and version", () => {
     const result = run(["--help"]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("qtha");
-    expect(result.stdout).toContain("compile");
-    expect(result.stdout).toContain("validate");
+    expect(result.stdout).toContain("build");
+    expect(result.stdout).toContain("check");
   });
 
   test("-v shows version", () => {
@@ -543,7 +548,7 @@ describe("qtha help and version", () => {
 // ─── Integration: end-to-end CLI workflow ────────────────────────────────────
 
 describe("end-to-end CLI workflow", () => {
-  test("new → validate → doctor → info → compile", async () => {
+  test("new → check → info → build", async () => {
     // 1. Create a new spec via CLI
     let result = run(["new", "--name", "Workflow App"]);
     expect(result.exitCode).toBe(0);
@@ -584,26 +589,22 @@ describe("end-to-end CLI workflow", () => {
     });
     await writeJson(p, spec);
 
-    // 3. Validate
-    result = run(["validate", p]);
+    // 3. Check (validate + doctor)
+    result = run(["check", p]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("✓");
-
-    // 4. Doctor
-    result = run(["doctor", p]);
-    expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("0 error(s)");
 
-    // 5. Info
+    // 4. Info
     result = run(["info", p]);
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain("Workflow App");
     expect(result.stdout).toContain("addItem");
 
-    // 6. Compile
+    // 5. Build
     const outDir = join(tmpDir, "prompts");
     await writeJson(join(tmpDir, "qtha.json"), makeConfig({ out: outDir }));
-    result = run(["compile", p]);
+    result = run(["build", p]);
     expect(result.exitCode).toBe(0);
 
     const files = await readdir(outDir);

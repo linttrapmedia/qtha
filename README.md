@@ -36,36 +36,30 @@ bun link
 # Create a named spec file
 bunx qtha new --name "spec-name"
 
-# Validate it
-bunx qtha validate [file|dir]
+# Validate and diagnose
+bunx qtha check [file|dir]
 
 # Compile directives into VS Code Copilot .prompt.md files (uses ide/out from qtha.json)
-bunx qtha compile [file|dir]
+bunx qtha build [file|dir]
 
 # Get detailed info about a spec
 bunx qtha info [file|dir]
 
-# Diagnose issues
-bunx qtha doctor [file|dir]
-
 # Scaffold qtha.json config and agent file
-bunx qtha setup
+bunx qtha config
 ```
 
 ## CLI Reference
 
 ```
-qtha new --name <name>     Create a named .qtha.json file
-qtha compile [file|dir]    Compile .prompt.md files from spec(s)
-qtha info [file|dir]       Report detailed info about spec file(s)
-qtha doctor [file|dir]     Diagnose and report issues in spec file(s)
-qtha validate [file|dir]   Validate spec(s) against their schemas
-qtha clean                 Remove agent files and clear config results
-qtha pkg --list            List available packages
-qtha pkg --install <name>  Install a package to current directory
-qtha setup                 Scaffold qtha.json config and agent file
-  --ide <ide>              IDE target (default: vscode)
-  --out <dir>              Output directory (default: .github/prompts/)
+qtha new --name <name>        Create a named .qtha.json file
+qtha build [file|dir]         Compile .prompt.md files from spec(s)
+qtha info [file|dir]          Report detailed info about spec file(s)
+qtha check [file|dir]         Validate and diagnose spec file(s)
+qtha clean                    Remove agent files and clear config results
+qtha pkg --list               List available packages
+qtha pkg --install <name>     Install a package to current directory
+qtha config --kwargs <json>   Scaffold qtha.json config and agent file
 ```
 
 ## Library API

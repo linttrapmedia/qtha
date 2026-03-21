@@ -47,17 +47,10 @@ async function installPackage(name: string) {
 }
 
 export async function pkgCommand(_positional: string[], flags: Record<string, string | boolean>) {
-  if (flags.list) {
-    await listPackages();
-    return;
-  }
-
   if (flags.install && typeof flags.install === "string") {
     await installPackage(flags.install);
     return;
   }
 
-  console.log(`${cyan(LOGO)} ${bold("pkg")}\n`);
-  console.log(`  ${cyan("qtha pkg")} --list               List available packages`);
-  console.log(`  ${cyan("qtha pkg")} --install <name>      Install a package to current directory`);
+  await listPackages();
 }

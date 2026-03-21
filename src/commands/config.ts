@@ -5,8 +5,24 @@ import { configPath, initConfig } from "../lib/config";
 
 const AGENT_TEMPLATE_PATH = resolve(import.meta.dir, "../templates/agent.template.md");
 
-export async function setupCommand(_positional: string[], flags: Record<string, string | boolean>) {
-  console.log(`${cyan(LOGO)} ${bold("setup")}\n`);
+function parseKwargs(raw: string): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const pair of raw.split(",")) {
+    const trimmed = pair.trim();
+    if (!trimmed) continue;
+    const eqIdx = trimmed.indexOf("=");
+    if (eqIdx === -1) continue;
+    const key = trimmed.slice(0, eqIdx).trim();
+    const value = trimmed.slice(eqIdx + 1).trim();
+    if (key) result[key] = value;
+  }
+  return result;
+}
+
+export async function configCommand(_positional: string[], flags: Record<string, string | boolean>) {
+  console.log(`${cyan(LOGO)} ${bold("config")}\n`);
+
+  const kwargs = typeof flags.kwargs === "string" ? parseKwargs(flags.kwargs) : {};
 
   // ─── Initialize qtha.json config ──────────────────────────────────────
   const cfgPath = configPath();
@@ -14,9 +30,10 @@ export async function setupCommand(_positional: string[], flags: Record<string, 
   if (await cfgFile.exists()) {
     console.log(`${yellow("●")} Config already exists: ${dim(cfgPath)}`);
   } else {
-    const ide = typeof flags.ide === "string" ? flags.ide : "vscode";
-    const out = typeof flags.out === "string" ? flags.out : ".github/prompts";
-    await initConfig({ ide, out });
+    const overrides: Record<string, string> = {};
+    if (kwargs.ide) overrides.ide = kwargs.ide;
+    if (kwargs.out) overrides.out = kwargs.out;
+    await initConfig(overrides);
     console.log(`${green("✓")} Created ${dim(cfgPath)}`);
   }
 

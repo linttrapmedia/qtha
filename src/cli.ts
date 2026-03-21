@@ -1,27 +1,23 @@
 #!/usr/bin/env bun
 
+import { buildCommand } from "./commands/build";
+import { checkCommand } from "./commands/check";
 import { cleanCommand } from "./commands/clean";
-import { compileCommand } from "./commands/compile";
-import { doctorCommand } from "./commands/doctor";
+import { configCommand } from "./commands/config";
 import { infoCommand } from "./commands/info";
 import { newCommand } from "./commands/new";
 import { pkgCommand } from "./commands/pkg";
-import { setupCommand } from "./commands/setup";
-import { validateCommand } from "./commands/validate";
 import { bold, cyan, dim, LOGO } from "./lib/color";
 
 const COMMANDS: [string, string][] = [
   ["qtha new --name <name>", "Create a named .qtha.json file"],
-  ["qtha compile [file|dir]", "Compile .prompt.md files from spec(s)"],
+  ["qtha build [file|dir]", "Compile .prompt.md files from spec(s)"],
   ["qtha info [file|dir]", "Report detailed info about spec file(s)"],
-  ["qtha doctor [file|dir]", "Diagnose and report issues in spec file(s)"],
-  ["qtha validate [file|dir]", "Validate spec(s) against their schemas"],
+  ["qtha check [file|dir]", "Validate and diagnose spec file(s)"],
   ["qtha clean", "Remove agent files and clear config results"],
   ["qtha pkg --list", "List available packages"],
   ["qtha pkg --install <name>", "Install a package to current directory"],
-  ["qtha setup", "Scaffold qtha.json config and agent file"],
-  ["  --ide <ide>", "IDE target (default: vscode)"],
-  ["  --out <dir>", "Output directory (default: .github/prompts/)"],
+  ["qtha config --kwargs <json>", "Scaffold qtha.json config and agent file"],
 ];
 
 const OPTIONS: [string, string][] = [
@@ -91,20 +87,17 @@ async function main() {
     case "new":
       await newCommand(positional, flags);
       break;
-    case "compile":
-      await compileCommand(positional, flags);
+    case "build":
+      await buildCommand(positional, flags);
       break;
     case "info":
       await infoCommand(positional, flags);
       break;
-    case "doctor":
-      await doctorCommand(positional, flags);
+    case "check":
+      await checkCommand(positional, flags);
       break;
-    case "validate":
-      await validateCommand(positional, flags);
-      break;
-    case "setup":
-      await setupCommand(positional, flags);
+    case "config":
+      await configCommand(positional, flags);
       break;
     case "clean":
       await cleanCommand(positional, flags);
