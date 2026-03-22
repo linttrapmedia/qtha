@@ -2,8 +2,39 @@
   "ide": "vscode",
   "out": ".github/prompts",
   "results": {
-    "info": [],
-    "doctor": [],
-    "validate": []
+    "health": [
+      {
+        "filePath": "my-app.qtha.json",
+        "name": "My App",
+        "description": "User and team management data for My App, with schema-driven types and LLM directives",
+        "version": "1.0.0",
+        "directives": [
+          {
+            "name": "addEntity",
+            "description": "Procedure for adding a new entity type to the spec schema and data",
+            "stepCount": 6
+          },
+          {
+            "name": "generateTypes",
+            "description": "Generate TypeScript type definitions from the spec schema",
+            "stepCount": 3
+          },
+          {
+            "name": "seedData",
+            "description": "Generate seed data records for a given entity type",
+            "stepCount": 4
+          }
+        ],
+        "schemaTypeCount": 4,
+        "dataKeys": ["users", "teams"],
+        "changeLogCount": 2,
+        "designDecisionCount": 2,
+        "valid": true,
+        "validationErrors": [],
+        "diagnosticErrors": [],
+        "diagnosticWarnings": [],
+        "ok": true
+      }
+    ]
   }
 }
